@@ -1,0 +1,20 @@
+export type BugfreedbackWidgetStep = 'idle' | 'form' | 'capture' | 'annotate' | 'submitting' | 'error';
+export declare function useBugfreedbackWidget(): {
+    open: any;
+    step: any;
+    screenshotDataUrl: any;
+    originalScreenshotDataUrl: any;
+    title: any;
+    description: any;
+    email: any;
+    errorMessage: any;
+    successMessage: any;
+    isEnabled: any;
+    start: () => void;
+    close: () => void;
+    includeScreenshot: () => Promise<void>;
+    setAnnotatedScreenshot: (dataUrl: string) => void;
+    cancelAnnotate: () => void;
+    clearScreenshot: () => void;
+    submit: () => Promise<void>;
+};

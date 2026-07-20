@@ -1,0 +1,77 @@
+{
+  "name": "@bugfreedback/bugfreedback",
+  "version": "0.0.0",
+  "description": "Nuxt feedback widget with pluggable storage and export adapters",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bugfreedback/bugfreedback.git"
+  },
+  "homepage": "https://bugfreedback.github.io/bugfreedback/",
+  "bugs": {
+    "url": "https://github.com/bugfreedback/bugfreedback/issues"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/types.d.mts",
+      "import": "./dist/module.mjs"
+    }
+  },
+  "main": "./dist/module.mjs",
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./dist/types.d.mts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "workspaces": [
+    "playground"
+  ],
+  "scripts": {
+    "prepack": "nuxt-module-build build",
+    "prepare": "nuxt-module-build prepare || true",
+    "dev": "npm run dev:prepare && nuxt dev playground",
+    "dev:build": "nuxt build playground",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt prepare playground",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.848.0",
+    "@google-cloud/storage": "^7.21.0",
+    "@nuxt/kit": "^4.5.0",
+    "nanoid": "^5.1.6",
+    "zod": "^3.25.0"
+  },
+  "peerDependencies": {
+    "nuxt": ">=3.0.0"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "^3.2.4",
+    "@nuxt/eslint-config": "^1.16.0",
+    "@nuxt/module-builder": "^1.0.2",
+    "@nuxt/schema": "^4.5.0",
+    "@nuxt/test-utils": "^4.0.3",
+    "@types/node": "latest",
+    "eslint": "^10.7.0",
+    "nuxt": "^4.5.0",
+    "typescript": "~5.8.3",
+    "vitepress": "^1.6.3",
+    "vitest": "^3.2.4",
+    "vue-tsc": "^2.2.10"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}
