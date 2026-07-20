@@ -1,17 +1,25 @@
 # Changelog
 
-## [0.0.3]
+## [0.0.3] - 2026-07-20
 
-- Fix annotator toolbar: restore 50/50 tools | text-edit layout and reserve text-control height so selecting text does not resize the toolbar.
+### Bug Fixes
 
-## [0.0.2]
+- Restore annotator toolbar 50/50 layout (tools left, text edit right) so the edit panel no longer drops below the toolbar.
+- Reserve text-control height in the toolbar side panel so selecting a text annotation does not resize the toolbar region.
 
-- Annotator/host theming (modal and annotate colors), Nuxt UI toolbar buttons, Lucide icons.
+## [0.0.2] - 2026-07-19
 
-## [0.0.1]
+### Features
 
-- Explicit `#imports` / relative composable imports for published module runtime.
+- Annotator and host theming: `modalBgColor`, `modalTextColor`, `annotateBgColor`, `annotateTextColor`.
+- Nuxt UI toolbar buttons with bundled Lucide icons.
 
-## [0.0.0]
+## [0.0.1] - 2026-07-19
+
+### Bug Fixes
+
+- Explicit `#imports` and relative composable imports for published module runtime (fixes `useBugfreedbackWidget is not defined` in host apps).
+
+## [0.0.0] - 2026-07-19
 
 - Initial Nuxt module scaffold with storage/export adapters, docs site, and Release-driven publishing.
