@@ -82,8 +82,9 @@ export default defineNuxtModule<ModuleOptions>({
       pathPrefix: false,
     })
 
+    // Prefer explicit imports in host apps; avoid clashing with Wayfarer utils.
+    // addImportsDir(resolver.resolve('./runtime/utils'))
     addImportsDir(resolver.resolve('./runtime/composables'))
-    addImportsDir(resolver.resolve('./runtime/utils'))
 
     addPlugin(resolver.resolve('./runtime/plugin'))
     addPlugin(resolver.resolve('./runtime/plugins/console-ring.client'))

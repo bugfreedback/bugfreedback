@@ -54,7 +54,6 @@ const module$1 = defineNuxtModule({
       pathPrefix: false
     });
     addImportsDir(resolver.resolve("./runtime/composables"));
-    addImportsDir(resolver.resolve("./runtime/utils"));
     addPlugin(resolver.resolve("./runtime/plugin"));
     addPlugin(resolver.resolve("./runtime/plugins/console-ring.client"));
     addServerHandler({
