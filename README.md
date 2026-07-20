@@ -55,9 +55,24 @@ Versions are managed by CI:
 
 1. Conventional Commits on `main`
 2. **release-please** opens a Release PR and creates a GitHub Release
-3. **publish** workflow sets `package.json` version from the release tag (not committed) and publishes to npm
+3. **publish** workflow sets `package.json` version from the release tag (not committed) and publishes to npm via [Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) (OIDC — no `NPM_TOKEN`)
 
 Authors never hand-edit the package version.
+
+### npm Trusted Publishing setup
+
+On [npmjs.com](https://www.npmjs.com/) for `@bugfreedback/bugfreedback` → **Settings** → **Trusted Publisher**:
+
+| Field | Value |
+|-------|-------|
+| Provider | GitHub Actions |
+| Organization or user | `bugfreedback` |
+| Repository | `bugfreedback` |
+| Workflow filename | `publish.yml` |
+| Environment | _(leave blank)_ |
+| Allowed actions | `npm publish` |
+
+Do **not** add an `NPM_TOKEN` GitHub secret. The workflow uses `permissions.id-token: write` only.
 
 ## License
 

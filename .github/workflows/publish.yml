@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  # Required for npm Trusted Publishing (OIDC) — no NPM_TOKEN secret.
   id-token: write
 
 jobs:
@@ -19,12 +20,17 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # Trusted publishing needs Node >= 22.14 and npm >= 11.5.1
+          node-version: 24
           registry-url: https://registry.npmjs.org
+          # Do not cache package manager state on release builds
           cache: npm
 
+      - name: Ensure npm CLI supports trusted publishing
+        run: npm install -g npm@latest
+
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Prepare and build
         run: |
@@ -37,7 +43,7 @@ jobs:
           VERSION="${TAG#v}"
           npm version "$VERSION" --no-git-tag-version --allow-same-version
 
+      # Auth is OIDC via Trusted Publishing — do not set NODE_AUTH_TOKEN / NPM_TOKEN.
+      # Provenance is generated automatically when publishing via trusted publishers.
       - name: Publish to npm
-        run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
