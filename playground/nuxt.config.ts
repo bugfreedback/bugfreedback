@@ -1,11 +1,16 @@
 export default defineNuxtConfig({
-  modules: ['../src/module'],
+  modules: ['@nuxt/ui', '../src/module'],
   devtools: { enabled: true },
+  css: ['~/assets/css/main.css'],
   compatibilityDate: '2025-01-01',
   bugfreedback: {
     enabled: true,
     primaryColor: '#0ea5e9',
-    secondaryColor: '#0f172a',
+    primaryTextColor: '#ffffff',
+    modalBgColor: '#0f172a',
+    modalTextColor: '#ffffff',
+    annotateBgColor: '#3f3f46',
+    annotateTextColor: '#f4f4f5',
     buttonLayout: 'vertical',
     position: {
       edge: 'right',

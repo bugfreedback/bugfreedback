@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, useRuntimeConfig } from '#imports'
+import { computed, useRuntimeConfig } from '#imports'
 import {
   BUGFREEDBACK_LAUNCHER_EDGE_NUDGE_PX,
   BUGFREEDBACK_ROOT_ID,
@@ -31,6 +31,10 @@ const ui = computed(() => (config.public.bugfreedback ?? {}) as {
   primaryColor?: string
   secondaryColor?: string
   primaryTextColor?: string
+  modalBgColor?: string
+  modalTextColor?: string
+  annotateBgColor?: string
+  annotateTextColor?: string
   buttonLayout?: 'horizontal' | 'vertical'
   position?: { edge?: 'left' | 'right' | 'top' | 'bottom', offsetX?: number, offsetY?: number }
   label?: string
@@ -42,18 +46,6 @@ const panelVisible = computed(
 
 const isAnnotateStep = computed(() => step.value === 'annotate')
 const isFormStep = computed(() => step.value === 'form' || step.value === 'submitting')
-
-const prefersDarkUi = ref(true)
-
-onMounted(() => {
-  const media = window.matchMedia('(prefers-color-scheme: dark)')
-  prefersDarkUi.value = media.matches
-  const onChange = (event: MediaQueryListEvent) => {
-    prefersDarkUi.value = event.matches
-  }
-  media.addEventListener('change', onChange)
-  onUnmounted(() => media.removeEventListener('change', onChange))
-})
 
 const panelTitle = computed(() => {
   if (isAnnotateStep.value) {
@@ -119,13 +111,15 @@ const launcherStyle = computed(() => {
 const panelStyle = computed(() => {
   if (isAnnotateStep.value) {
     return {
-      backgroundColor: prefersDarkUi.value ? '#3f3f46' : '#d4d4d8',
-      color: prefersDarkUi.value ? '#f4f4f5' : '#18181b',
+      backgroundColor: ui.value.annotateBgColor ?? 'var(--bugfreedback-annotate-bg, #3f3f46)',
+      color: ui.value.annotateTextColor ?? 'var(--bugfreedback-annotate-text, #f4f4f5)',
     }
   }
   return {
-    backgroundColor: ui.value.secondaryColor ?? 'rgba(15, 23, 42, 0.98)',
-    color: '#fff',
+    backgroundColor: ui.value.modalBgColor
+      ?? ui.value.secondaryColor
+      ?? 'var(--bugfreedback-modal-bg, #0f172a)',
+    color: ui.value.modalTextColor ?? 'var(--bugfreedback-modal-text, #fff)',
   }
 })
 </script>
@@ -161,14 +155,14 @@ const panelStyle = computed(() => {
       >
         <div class="bf-panel__header">
           <h2>{{ panelTitle }}</h2>
-          <button
-            type="button"
-            class="bf-icon-btn"
+          <UButton
+            color="neutral"
+            variant="ghost"
+            icon="i-lucide-x"
+            size="sm"
             aria-label="Close feedback"
             @click="isAnnotateStep ? cancelAnnotate() : close()"
-          >
-            ×
-          </button>
+          />
         </div>
 
         <div
@@ -184,15 +178,17 @@ const panelStyle = computed(() => {
 
           <template v-else-if="isFormStep">
             <div class="bf-form-block">
-              <button
+              <UButton
                 v-if="!screenshotDataUrl"
-                type="button"
-                class="bf-btn bf-btn--block"
+                color="primary"
+                variant="soft"
+                icon="i-lucide-camera"
+                class="w-full justify-center"
                 :disabled="step === 'submitting'"
                 @click="includeScreenshot"
               >
                 Include screenshot
-              </button>
+              </UButton>
               <div
                 v-else
                 class="bf-screenshot"
@@ -202,22 +198,25 @@ const panelStyle = computed(() => {
                   alt="Annotated feedback screenshot"
                 >
                 <div class="bf-screenshot__actions">
-                  <button
-                    type="button"
-                    class="bf-btn"
+                  <UButton
+                    color="neutral"
+                    variant="soft"
+                    size="xs"
+                    class="flex-1 justify-center"
                     :disabled="step === 'submitting'"
                     @click="includeScreenshot"
                   >
                     Replace screenshot
-                  </button>
-                  <button
-                    type="button"
-                    class="bf-btn bf-btn--ghost"
+                  </UButton>
+                  <UButton
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
                     :disabled="step === 'submitting'"
                     @click="clearScreenshot"
                   >
                     Remove
-                  </button>
+                  </UButton>
                 </div>
               </div>
             </div>
@@ -267,37 +266,35 @@ const panelStyle = computed(() => {
           v-if="isFormStep || step === 'error'"
           class="bf-panel__footer"
         >
-          <button
+          <UButton
             v-if="step === 'form'"
-            type="button"
-            class="bf-btn bf-btn--primary"
+            color="primary"
             @click="submit"
           >
             Submit
-          </button>
-          <button
+          </UButton>
+          <UButton
             v-else-if="step === 'submitting'"
-            type="button"
-            class="bf-btn bf-btn--primary"
+            color="primary"
+            loading
             disabled
           >
             Submitting…
-          </button>
+          </UButton>
           <template v-else-if="step === 'error'">
-            <button
-              type="button"
-              class="bf-btn"
+            <UButton
+              color="neutral"
+              variant="soft"
               @click="close"
             >
               Close
-            </button>
-            <button
-              type="button"
-              class="bf-btn bf-btn--primary"
+            </UButton>
+            <UButton
+              color="primary"
               @click="start"
             >
               Try again
-            </button>
+            </UButton>
           </template>
         </div>
       </div>

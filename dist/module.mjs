@@ -1,5 +1,5 @@
 import { defineNuxtModule, createResolver, addComponentsDir, addImportsDir, addPlugin, addServerHandler } from '@nuxt/kit';
-import { BUGFREEDBACK_DEFAULT_PRIMARY_TEXT, BUGFREEDBACK_DEFAULT_SECONDARY, BUGFREEDBACK_DEFAULT_PRIMARY } from '../dist/runtime/constants.js';
+import { BUGFREEDBACK_DEFAULT_ANNOTATE_TEXT, BUGFREEDBACK_DEFAULT_ANNOTATE_BG, BUGFREEDBACK_DEFAULT_MODAL_TEXT, BUGFREEDBACK_DEFAULT_MODAL_BG, BUGFREEDBACK_DEFAULT_PRIMARY_TEXT, BUGFREEDBACK_DEFAULT_SECONDARY, BUGFREEDBACK_DEFAULT_PRIMARY, BUGFREEDBACK_ICON_NAMES } from '../dist/runtime/constants.js';
 
 const module$1 = defineNuxtModule({
   meta: {
@@ -9,11 +9,21 @@ const module$1 = defineNuxtModule({
       nuxt: ">=3.0.0"
     }
   },
+  // Ensure Nuxt UI (and its icon stack) is available so UButton / UIcon work.
+  moduleDependencies: {
+    "@nuxt/ui": {
+      version: ">=3.0.0"
+    }
+  },
   defaults: {
     enabled: true,
     primaryColor: BUGFREEDBACK_DEFAULT_PRIMARY,
     secondaryColor: BUGFREEDBACK_DEFAULT_SECONDARY,
     primaryTextColor: BUGFREEDBACK_DEFAULT_PRIMARY_TEXT,
+    modalBgColor: BUGFREEDBACK_DEFAULT_MODAL_BG,
+    modalTextColor: BUGFREEDBACK_DEFAULT_MODAL_TEXT,
+    annotateBgColor: BUGFREEDBACK_DEFAULT_ANNOTATE_BG,
+    annotateTextColor: BUGFREEDBACK_DEFAULT_ANNOTATE_TEXT,
     buttonLayout: "vertical",
     position: {
       edge: "right",
@@ -33,11 +43,16 @@ const module$1 = defineNuxtModule({
   },
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url);
+    const modalBgColor = options.modalBgColor || options.secondaryColor || BUGFREEDBACK_DEFAULT_MODAL_BG;
     nuxt.options.runtimeConfig.public.bugfreedback = {
       enabled: options.enabled,
       primaryColor: options.primaryColor,
       secondaryColor: options.secondaryColor,
       primaryTextColor: options.primaryTextColor,
+      modalBgColor,
+      modalTextColor: options.modalTextColor,
+      annotateBgColor: options.annotateBgColor,
+      annotateTextColor: options.annotateTextColor,
       buttonLayout: options.buttonLayout,
       position: options.position,
       auth: options.auth,
@@ -49,6 +64,14 @@ const module$1 = defineNuxtModule({
       storage: options.storage,
       export: options.export
     };
+    const iconOptions = nuxt.options;
+    iconOptions.icon ||= {};
+    iconOptions.icon.clientBundle ||= {};
+    const existing = iconOptions.icon.clientBundle.icons ?? [];
+    iconOptions.icon.clientBundle.icons = Array.from(/* @__PURE__ */ new Set([
+      ...existing,
+      ...BUGFREEDBACK_ICON_NAMES
+    ]));
     addComponentsDir({
       path: resolver.resolve("./runtime/components"),
       pathPrefix: false

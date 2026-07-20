@@ -88,8 +88,17 @@ interface ModuleOptions {
     /** When false, widget and API are disabled. */
     enabled: boolean;
     primaryColor: string;
+    /** @deprecated Prefer `modalBgColor`. Kept as fallback for the form panel background. */
     secondaryColor: string;
     primaryTextColor: string;
+    /** Feedback form modal background. */
+    modalBgColor: string;
+    /** Feedback form modal text color. */
+    modalTextColor: string;
+    /** Annotate screenshot modal background. */
+    annotateBgColor: string;
+    /** Annotate screenshot modal text color. */
+    annotateTextColor: string;
     buttonLayout: BugfreedbackButtonLayout;
     position: BugfreedbackPositionOptions;
     auth: BugfreedbackAuthMode;

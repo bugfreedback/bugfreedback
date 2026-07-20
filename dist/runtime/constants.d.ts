@@ -10,3 +10,9 @@ export declare const BUGFREEDBACK_ANNOTATE_SCALE = 0.75;
 export declare const BUGFREEDBACK_DEFAULT_PRIMARY = "#3b82f6";
 export declare const BUGFREEDBACK_DEFAULT_SECONDARY = "#1e293b";
 export declare const BUGFREEDBACK_DEFAULT_PRIMARY_TEXT = "#ffffff";
+export declare const BUGFREEDBACK_DEFAULT_MODAL_BG = "#0f172a";
+export declare const BUGFREEDBACK_DEFAULT_MODAL_TEXT = "#ffffff";
+export declare const BUGFREEDBACK_DEFAULT_ANNOTATE_BG = "#3f3f46";
+export declare const BUGFREEDBACK_DEFAULT_ANNOTATE_TEXT = "#f4f4f5";
+/** Lucide icons used by the widget toolbar (bundled via @nuxt/icon). */
+export declare const BUGFREEDBACK_ICON_NAMES: readonly ["lucide:mouse-pointer-2", "lucide:pencil", "lucide:highlighter", "lucide:move-up-right", "lucide:square", "lucide:circle", "lucide:type", "lucide:eye-off", "lucide:undo-2", "lucide:redo-2", "lucide:trash-2", "lucide:eraser", "lucide:x", "lucide:camera"];

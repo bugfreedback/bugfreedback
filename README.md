@@ -59,6 +59,10 @@ Versions are managed by CI:
 
 Authors never hand-edit the package version.
 
+### Peer: Nuxt UI
+
+Install `@nuxt/ui` in the host app (required for `UButton` / Lucide icons).
+
 ### npm Trusted Publishing setup
 
 On [npmjs.com](https://www.npmjs.com/) for `@bugfreedback/bugfreedback` → **Settings** → **Trusted Publisher**:

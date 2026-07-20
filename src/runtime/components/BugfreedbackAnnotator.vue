@@ -636,52 +636,55 @@ const canvasCursor = computed(() => {
   <div class="bf-annotator">
     <div class="bf-annotator__toolbar">
       <div class="bf-annotator__tools">
-        <button
+        <UButton
           v-for="item in toolButtons"
           :key="item.id"
-          type="button"
-          class="bf-btn bf-btn--xs"
-          :class="{ 'bf-btn--active': tool === item.id }"
+          size="xs"
+          :color="tool === item.id ? 'primary' : 'neutral'"
+          :variant="tool === item.id ? 'solid' : 'soft'"
+          :icon="item.icon"
           :aria-label="item.label"
           :title="item.label"
           @click="tool = item.id"
-        >
-          {{ item.label }}
-        </button>
+        />
         <span class="bf-annotator__sep" />
-        <button
-          type="button"
-          class="bf-btn bf-btn--xs"
+        <UButton
+          size="xs"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-undo-2"
           aria-label="Undo"
           :disabled="undoStack.length === 0"
           @click="undo"
-        >
-          Undo
-        </button>
-        <button
-          type="button"
-          class="bf-btn bf-btn--xs"
+        />
+        <UButton
+          size="xs"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-redo-2"
           aria-label="Redo"
           :disabled="redoStack.length === 0"
           @click="redo"
-        >
-          Redo
-        </button>
-        <button
-          type="button"
-          class="bf-btn bf-btn--xs"
+        />
+        <UButton
+          size="xs"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-trash-2"
           :disabled="!selectedId"
           @click="deleteSelected"
         >
           Delete
-        </button>
-        <button
-          type="button"
-          class="bf-btn bf-btn--xs"
+        </UButton>
+        <UButton
+          size="xs"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-eraser"
           @click="clearAnnotations"
         >
           Clear
-        </button>
+        </UButton>
       </div>
       <div class="bf-annotator__palette">
         <button
@@ -701,16 +704,16 @@ const canvasCursor = computed(() => {
           aria-label="Custom color"
           @input="applyColor(($event.target as HTMLInputElement).value)"
         >
-        <button
+        <UButton
           v-for="width in FEEDBACK_ANNOTATE_STROKE_WIDTHS"
           :key="width.id"
-          type="button"
-          class="bf-btn bf-btn--xs"
-          :class="{ 'bf-btn--active': strokeWidthId === width.id }"
+          size="xs"
+          :color="strokeWidthId === width.id ? 'primary' : 'neutral'"
+          :variant="strokeWidthId === width.id ? 'solid' : 'soft'"
           @click="strokeWidthId = width.id"
         >
           {{ width.label }}
-        </button>
+        </UButton>
       </div>
       <div
         v-if="selectedAnnotation?.kind === 'text'"
@@ -724,34 +727,34 @@ const canvasCursor = computed(() => {
           type="text"
           placeholder="Label text…"
         >
-        <button
+        <UButton
           v-for="size in FEEDBACK_TEXT_SIZES"
           :key="size.id"
-          type="button"
-          class="bf-btn bf-btn--xs"
-          :class="{ 'bf-btn--active': selectedTextSize === size.id }"
+          size="xs"
+          :color="selectedTextSize === size.id ? 'primary' : 'neutral'"
+          :variant="selectedTextSize === size.id ? 'solid' : 'soft'"
           @click="applyTextSize(size.id)"
         >
           {{ size.label }}
-        </button>
-        <button
-          type="button"
-          class="bf-btn bf-btn--xs"
-          :class="{ 'bf-btn--active': selectedTextBold }"
+        </UButton>
+        <UButton
+          size="xs"
+          :color="selectedTextBold ? 'primary' : 'neutral'"
+          :variant="selectedTextBold ? 'solid' : 'soft'"
           aria-label="Bold"
           @click="toggleTextBold"
         >
-          <b>B</b>
-        </button>
-        <button
-          type="button"
-          class="bf-btn bf-btn--xs"
-          :class="{ 'bf-btn--active': selectedTextItalic }"
+          <span class="font-bold px-0.5">B</span>
+        </UButton>
+        <UButton
+          size="xs"
+          :color="selectedTextItalic ? 'primary' : 'neutral'"
+          :variant="selectedTextItalic ? 'solid' : 'soft'"
           aria-label="Italic"
           @click="toggleTextItalic"
         >
-          <i>I</i>
-        </button>
+          <span class="italic px-0.5">I</span>
+        </UButton>
       </div>
       <p
         v-else
@@ -774,20 +777,19 @@ const canvasCursor = computed(() => {
     </div>
 
     <div class="bf-annotator__actions">
-      <button
-        type="button"
-        class="bf-btn"
+      <UButton
+        color="neutral"
+        variant="soft"
         @click="emit('cancel')"
       >
         Cancel
-      </button>
-      <button
-        type="button"
-        class="bf-btn bf-btn--active"
+      </UButton>
+      <UButton
+        color="primary"
         @click="continueAnnotating"
       >
         Continue
-      </button>
+      </UButton>
     </div>
   </div>
 </template>

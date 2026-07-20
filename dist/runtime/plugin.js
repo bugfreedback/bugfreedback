@@ -4,14 +4,19 @@ export default defineNuxtPlugin(() => {
   const ui = config.public.bugfreedback;
   if (import.meta.client && typeof document !== "undefined" && ui) {
     const root = document.documentElement;
-    if (ui.primaryColor) {
-      root.style.setProperty("--bugfreedback-primary", ui.primaryColor);
-    }
-    if (ui.secondaryColor) {
-      root.style.setProperty("--bugfreedback-secondary", ui.secondaryColor);
-    }
-    if (ui.primaryTextColor) {
-      root.style.setProperty("--bugfreedback-primary-text", ui.primaryTextColor);
+    const pairs = [
+      ["--bugfreedback-primary", ui.primaryColor],
+      ["--bugfreedback-secondary", ui.secondaryColor],
+      ["--bugfreedback-primary-text", ui.primaryTextColor],
+      ["--bugfreedback-modal-bg", ui.modalBgColor || ui.secondaryColor],
+      ["--bugfreedback-modal-text", ui.modalTextColor],
+      ["--bugfreedback-annotate-bg", ui.annotateBgColor],
+      ["--bugfreedback-annotate-text", ui.annotateTextColor]
+    ];
+    for (const [name, value] of pairs) {
+      if (value) {
+        root.style.setProperty(name, value);
+      }
     }
   }
 });
