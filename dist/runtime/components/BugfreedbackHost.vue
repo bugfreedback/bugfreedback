@@ -1,8 +1,10 @@
 <script setup>
+import { computed, onMounted, onUnmounted, ref, useRuntimeConfig } from "#imports";
 import {
   BUGFREEDBACK_LAUNCHER_EDGE_NUDGE_PX,
   BUGFREEDBACK_ROOT_ID
 } from "../constants";
+import { useBugfreedbackWidget } from "../composables/useBugfreedbackWidget";
 import BugfreedbackAnnotator from "./BugfreedbackAnnotator.vue";
 const {
   open,

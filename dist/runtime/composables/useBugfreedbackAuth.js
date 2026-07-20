@@ -1,3 +1,4 @@
+import { useNuxtApp } from "#imports";
 const AUTH_KEY = "bugfreedbackAuth";
 export function provideBugfreedbackAuth(provider) {
   const nuxtApp = useNuxtApp();

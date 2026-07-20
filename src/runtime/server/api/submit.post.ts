@@ -1,4 +1,5 @@
 import { createError, defineEventHandler, getHeader, readBody } from 'h3'
+import { useRuntimeConfig } from '#imports'
 import type { BugfreedbackExportOptions, BugfreedbackStorageOptions } from '../../../types'
 import {
   buildScreenshotObjectKey,

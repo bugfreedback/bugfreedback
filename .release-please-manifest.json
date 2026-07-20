@@ -1,7 +1,3 @@
 {
-  ".": {
-    "changelog": "CHANGELOG.md",
-    "release-type": "node",
-    "package-name": "@bugfreedback/bugfreedback"
-  }
+  ".": "0.0.1"
 }

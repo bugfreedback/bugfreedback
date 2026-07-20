@@ -1,15 +1,15 @@
 export type BugfreedbackWidgetStep = 'idle' | 'form' | 'capture' | 'annotate' | 'submitting' | 'error';
 export declare function useBugfreedbackWidget(): {
-    open: any;
-    step: any;
-    screenshotDataUrl: any;
-    originalScreenshotDataUrl: any;
-    title: any;
-    description: any;
-    email: any;
-    errorMessage: any;
-    successMessage: any;
-    isEnabled: any;
+    open: import("vue").Ref<boolean, boolean>;
+    step: import("vue").Ref<BugfreedbackWidgetStep, BugfreedbackWidgetStep>;
+    screenshotDataUrl: import("vue").Ref<string | null, string | null>;
+    originalScreenshotDataUrl: import("vue").Ref<string | null, string | null>;
+    title: import("vue").Ref<string, string>;
+    description: import("vue").Ref<string, string>;
+    email: import("vue").Ref<string, string>;
+    errorMessage: import("vue").Ref<string | null, string | null>;
+    successMessage: import("vue").Ref<string | null, string | null>;
+    isEnabled: import("vue").ComputedRef<boolean>;
     start: () => void;
     close: () => void;
     includeScreenshot: () => Promise<void>;

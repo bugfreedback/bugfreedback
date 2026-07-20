@@ -1,10 +1,12 @@
+import { computed, useRuntimeConfig, useState } from "#imports";
+import { $fetch } from "ofetch";
 import { nanoid } from "nanoid";
 import { BUGFREEDBACK_ANNOTATE_SCALE } from "../constants.js";
-import { useBugfreedbackAuth } from "./useBugfreedbackAuth.js";
 import { collectFeedbackMetadata } from "../utils/collectFeedbackMetadata.js";
 import { captureTabScreenshot } from "../utils/captureTabScreenshot.js";
 import { withFeedbackOverlayHidden } from "../utils/hideFeedbackOverlayForCapture.js";
 import { scaleImageDataUrl } from "../utils/scaleImageDataUrl.js";
+import { useBugfreedbackAuth } from "./useBugfreedbackAuth.js";
 export function useBugfreedbackWidget() {
   const config = useRuntimeConfig();
   const auth = useBugfreedbackAuth();

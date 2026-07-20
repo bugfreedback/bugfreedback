@@ -1,4 +1,5 @@
 import { createError, defineEventHandler, getHeader, readBody } from "h3";
+import { useRuntimeConfig } from "#imports";
 import {
   buildScreenshotObjectKey,
   resolveObjectPrefix

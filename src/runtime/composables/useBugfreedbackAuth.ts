@@ -1,3 +1,5 @@
+import { useNuxtApp } from '#imports'
+
 export type BugfreedbackReporter = {
   id?: string
   username?: string | null

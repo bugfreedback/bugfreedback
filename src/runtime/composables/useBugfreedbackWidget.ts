@@ -1,10 +1,12 @@
+import { computed, useRuntimeConfig, useState } from '#imports'
+import { $fetch } from 'ofetch'
 import { nanoid } from 'nanoid'
 import { BUGFREEDBACK_ANNOTATE_SCALE } from '../constants'
-import { useBugfreedbackAuth } from './useBugfreedbackAuth'
 import { collectFeedbackMetadata } from '../utils/collectFeedbackMetadata'
 import { captureTabScreenshot } from '../utils/captureTabScreenshot'
 import { withFeedbackOverlayHidden } from '../utils/hideFeedbackOverlayForCapture'
 import { scaleImageDataUrl } from '../utils/scaleImageDataUrl'
+import { useBugfreedbackAuth } from './useBugfreedbackAuth'
 
 export type BugfreedbackWidgetStep = 'idle' | 'form' | 'capture' | 'annotate' | 'submitting' | 'error'
 

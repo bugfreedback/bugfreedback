@@ -1,6 +1,6 @@
 {
   "name": "@bugfreedback/bugfreedback",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Nuxt feedback widget with pluggable storage and export adapters",
   "repository": {
     "type": "git",
@@ -50,6 +50,7 @@
     "@google-cloud/storage": "^7.21.0",
     "@nuxt/kit": "^4.5.0",
     "nanoid": "^5.1.6",
+    "ofetch": "^1.5.1",
     "zod": "^3.25.0"
   },
   "peerDependencies": {

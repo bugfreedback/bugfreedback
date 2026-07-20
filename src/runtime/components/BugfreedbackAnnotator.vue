@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from '#imports'
 import {
   FEEDBACK_ANNOTATE_COLORS,
   FEEDBACK_ANNOTATE_STROKE_WIDTHS,
