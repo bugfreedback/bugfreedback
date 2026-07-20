@@ -634,134 +634,150 @@ const canvasCursor = computed(() => {
 
 <template>
   <div class="bf-annotator">
+    <!--
+      Explicit 50/50 columns: a column flex stack lets the tool row's
+      max-content width push Edit text under the toolbar. Grid keeps the
+      edit panel beside tools at half modal width without resizing the
+      tool column when text controls appear.
+    -->
     <div class="bf-annotator__toolbar">
-      <div class="bf-annotator__tools">
-        <UButton
-          v-for="item in toolButtons"
-          :key="item.id"
-          size="xs"
-          :color="tool === item.id ? 'primary' : 'neutral'"
-          :variant="tool === item.id ? 'solid' : 'soft'"
-          :icon="item.icon"
-          :aria-label="item.label"
-          :title="item.label"
-          @click="tool = item.id"
-        />
-        <span class="bf-annotator__sep" />
-        <UButton
-          size="xs"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-undo-2"
-          aria-label="Undo"
-          :disabled="undoStack.length === 0"
-          @click="undo"
-        />
-        <UButton
-          size="xs"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-redo-2"
-          aria-label="Redo"
-          :disabled="redoStack.length === 0"
-          @click="redo"
-        />
-        <UButton
-          size="xs"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-trash-2"
-          :disabled="!selectedId"
-          @click="deleteSelected"
-        >
-          Delete
-        </UButton>
-        <UButton
-          size="xs"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-eraser"
-          @click="clearAnnotations"
-        >
-          Clear
-        </UButton>
+      <div class="bf-annotator__toolbar-main">
+        <div class="bf-annotator__tools">
+          <UButton
+            v-for="item in toolButtons"
+            :key="item.id"
+            size="xs"
+            :color="tool === item.id ? 'primary' : 'neutral'"
+            :variant="tool === item.id ? 'solid' : 'soft'"
+            :icon="item.icon"
+            :aria-label="item.label"
+            :title="item.label"
+            @click="tool = item.id"
+          />
+          <span class="bf-annotator__sep" />
+          <UButton
+            size="xs"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-undo-2"
+            aria-label="Undo"
+            :disabled="undoStack.length === 0"
+            @click="undo"
+          />
+          <UButton
+            size="xs"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-redo-2"
+            aria-label="Redo"
+            :disabled="redoStack.length === 0"
+            @click="redo"
+          />
+          <UButton
+            size="xs"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-trash-2"
+            :disabled="!selectedId"
+            @click="deleteSelected"
+          >
+            Delete
+          </UButton>
+          <UButton
+            size="xs"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-eraser"
+            @click="clearAnnotations"
+          >
+            Clear
+          </UButton>
+        </div>
+        <div class="bf-annotator__palette">
+          <button
+            v-for="swatch in FEEDBACK_ANNOTATE_COLORS"
+            :key="swatch"
+            type="button"
+            class="bf-swatch"
+            :class="{ 'bf-swatch--active': color.toLowerCase() === swatch.toLowerCase() }"
+            :style="{ backgroundColor: swatch }"
+            :aria-label="`Color ${swatch}`"
+            @click="applyColor(swatch)"
+          />
+          <input
+            :value="color"
+            type="color"
+            class="bf-color"
+            aria-label="Custom color"
+            @input="applyColor(($event.target as HTMLInputElement).value)"
+          >
+          <UButton
+            v-for="width in FEEDBACK_ANNOTATE_STROKE_WIDTHS"
+            :key="width.id"
+            size="xs"
+            :color="strokeWidthId === width.id ? 'primary' : 'neutral'"
+            :variant="strokeWidthId === width.id ? 'solid' : 'soft'"
+            @click="strokeWidthId = width.id"
+          >
+            {{ width.label }}
+          </UButton>
+        </div>
       </div>
-      <div class="bf-annotator__palette">
-        <button
-          v-for="swatch in FEEDBACK_ANNOTATE_COLORS"
-          :key="swatch"
-          type="button"
-          class="bf-swatch"
-          :class="{ 'bf-swatch--active': color.toLowerCase() === swatch.toLowerCase() }"
-          :style="{ backgroundColor: swatch }"
-          :aria-label="`Color ${swatch}`"
-          @click="applyColor(swatch)"
-        />
-        <input
-          :value="color"
-          type="color"
-          class="bf-color"
-          aria-label="Custom color"
-          @input="applyColor(($event.target as HTMLInputElement).value)"
+
+      <div class="bf-annotator__toolbar-side">
+        <div
+          class="bf-annotator__text-edit"
+          :class="{ 'bf-annotator__text-edit--active': selectedAnnotation?.kind === 'text' }"
+          :aria-hidden="selectedAnnotation?.kind !== 'text'"
         >
-        <UButton
-          v-for="width in FEEDBACK_ANNOTATE_STROKE_WIDTHS"
-          :key="width.id"
-          size="xs"
-          :color="strokeWidthId === width.id ? 'primary' : 'neutral'"
-          :variant="strokeWidthId === width.id ? 'solid' : 'soft'"
-          @click="strokeWidthId = width.id"
+          <label for="bugfreedback-annotate-text-input">Edit text</label>
+          <input
+            id="bugfreedback-annotate-text-input"
+            ref="textInputRef"
+            v-model="selectedText"
+            type="text"
+            placeholder="Label text…"
+            :tabindex="selectedAnnotation?.kind === 'text' ? 0 : -1"
+          >
+          <UButton
+            v-for="size in FEEDBACK_TEXT_SIZES"
+            :key="size.id"
+            size="xs"
+            :color="selectedTextSize === size.id ? 'primary' : 'neutral'"
+            :variant="selectedTextSize === size.id ? 'solid' : 'soft'"
+            :tabindex="selectedAnnotation?.kind === 'text' ? 0 : -1"
+            @click="applyTextSize(size.id)"
+          >
+            {{ size.label }}
+          </UButton>
+          <UButton
+            size="xs"
+            :color="selectedTextBold ? 'primary' : 'neutral'"
+            :variant="selectedTextBold ? 'solid' : 'soft'"
+            aria-label="Bold"
+            :tabindex="selectedAnnotation?.kind === 'text' ? 0 : -1"
+            @click="toggleTextBold"
+          >
+            <span class="font-bold px-0.5">B</span>
+          </UButton>
+          <UButton
+            size="xs"
+            :color="selectedTextItalic ? 'primary' : 'neutral'"
+            :variant="selectedTextItalic ? 'solid' : 'soft'"
+            aria-label="Italic"
+            :tabindex="selectedAnnotation?.kind === 'text' ? 0 : -1"
+            @click="toggleTextItalic"
+          >
+            <span class="italic px-0.5">I</span>
+          </UButton>
+        </div>
+        <p
+          v-if="selectedAnnotation?.kind !== 'text'"
+          class="bf-annotator__hint"
         >
-          {{ width.label }}
-        </UButton>
+          Select to move · handles resize · Delete removes
+        </p>
       </div>
-      <div
-        v-if="selectedAnnotation?.kind === 'text'"
-        class="bf-annotator__text-edit"
-      >
-        <label for="bugfreedback-annotate-text-input">Edit text</label>
-        <input
-          id="bugfreedback-annotate-text-input"
-          ref="textInputRef"
-          v-model="selectedText"
-          type="text"
-          placeholder="Label text…"
-        >
-        <UButton
-          v-for="size in FEEDBACK_TEXT_SIZES"
-          :key="size.id"
-          size="xs"
-          :color="selectedTextSize === size.id ? 'primary' : 'neutral'"
-          :variant="selectedTextSize === size.id ? 'solid' : 'soft'"
-          @click="applyTextSize(size.id)"
-        >
-          {{ size.label }}
-        </UButton>
-        <UButton
-          size="xs"
-          :color="selectedTextBold ? 'primary' : 'neutral'"
-          :variant="selectedTextBold ? 'solid' : 'soft'"
-          aria-label="Bold"
-          @click="toggleTextBold"
-        >
-          <span class="font-bold px-0.5">B</span>
-        </UButton>
-        <UButton
-          size="xs"
-          :color="selectedTextItalic ? 'primary' : 'neutral'"
-          :variant="selectedTextItalic ? 'solid' : 'soft'"
-          aria-label="Italic"
-          @click="toggleTextItalic"
-        >
-          <span class="italic px-0.5">I</span>
-        </UButton>
-      </div>
-      <p
-        v-else
-        class="bf-annotator__hint"
-      >
-        Select to move · handles resize · Delete removes
-      </p>
     </div>
 
     <div class="bf-annotator__canvas-wrap">
@@ -803,9 +819,22 @@ const canvasCursor = computed(() => {
   flex: 1;
 }
 .bf-annotator__toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  width: 100%;
+}
+.bf-annotator__toolbar-main {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  min-width: 0;
+}
+.bf-annotator__toolbar-side {
+  position: relative;
+  min-width: 0;
+  width: 100%;
 }
 .bf-annotator__tools,
 .bf-annotator__palette,
@@ -823,9 +852,28 @@ const canvasCursor = computed(() => {
   margin: 0 0.25rem;
 }
 .bf-annotator__hint {
+  position: absolute;
+  inset: 0;
   margin: 0;
   font-size: 0.75rem;
   opacity: 0.75;
+  padding: 0.25rem 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+.bf-annotator__text-edit {
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.25rem 0.625rem;
+  /* Always in layout so selecting text does not resize the toolbar. */
+  visibility: hidden;
+}
+.bf-annotator__text-edit--active {
+  visibility: visible;
 }
 .bf-annotator__canvas-wrap {
   position: relative;
@@ -893,13 +941,18 @@ const canvasCursor = computed(() => {
 }
 .bf-annotator__text-edit label {
   font-size: 0.75rem;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .bf-annotator__text-edit input[type='text'] {
-  min-width: 8rem;
-  flex: 1;
+  min-width: 0;
+  flex: 1 1 8rem;
   border-radius: 0.375rem;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(24, 24, 27, 0.9);
+  color: inherit;
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
+  outline: none;
 }
 </style>

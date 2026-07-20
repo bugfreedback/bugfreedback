@@ -27,15 +27,9 @@ export function useBugfreedbackWidget() {
   const submitPath = computed(() => publicConfig.value.submitPath ?? "/api/_bugfreedback/submit");
   function requireAuthIfNeeded() {
     if (authMode.value === "none" || authMode.value === "optional") {
-      if (authMode.value === "required" && !auth.getToken()) {
-        return false;
-      }
       return true;
     }
-    if (!auth.getToken()) {
-      return false;
-    }
-    return true;
+    return Boolean(auth.getToken());
   }
   function resetFormFields() {
     title.value = "";

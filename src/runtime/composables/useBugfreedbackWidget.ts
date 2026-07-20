@@ -39,15 +39,9 @@ export function useBugfreedbackWidget() {
 
   function requireAuthIfNeeded(): boolean {
     if (authMode.value === 'none' || authMode.value === 'optional') {
-      if (authMode.value === 'required' && !auth.getToken()) {
-        return false
-      }
       return true
     }
-    if (!auth.getToken()) {
-      return false
-    }
-    return true
+    return Boolean(auth.getToken())
   }
 
   function resetFormFields() {

@@ -549,134 +549,150 @@ const canvasCursor = computed(() => {
 
 <template>
   <div class="bf-annotator">
+    <!--
+      Explicit 50/50 columns: a column flex stack lets the tool row's
+      max-content width push Edit text under the toolbar. Grid keeps the
+      edit panel beside tools at half modal width without resizing the
+      tool column when text controls appear.
+    -->
     <div class="bf-annotator__toolbar">
-      <div class="bf-annotator__tools">
-        <UButton
-          v-for="item in toolButtons"
-          :key="item.id"
-          size="xs"
-          :color="tool === item.id ? 'primary' : 'neutral'"
-          :variant="tool === item.id ? 'solid' : 'soft'"
-          :icon="item.icon"
-          :aria-label="item.label"
-          :title="item.label"
-          @click="tool = item.id"
-        />
-        <span class="bf-annotator__sep" />
-        <UButton
-          size="xs"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-undo-2"
-          aria-label="Undo"
-          :disabled="undoStack.length === 0"
-          @click="undo"
-        />
-        <UButton
-          size="xs"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-redo-2"
-          aria-label="Redo"
-          :disabled="redoStack.length === 0"
-          @click="redo"
-        />
-        <UButton
-          size="xs"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-trash-2"
-          :disabled="!selectedId"
-          @click="deleteSelected"
-        >
-          Delete
-        </UButton>
-        <UButton
-          size="xs"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-eraser"
-          @click="clearAnnotations"
-        >
-          Clear
-        </UButton>
+      <div class="bf-annotator__toolbar-main">
+        <div class="bf-annotator__tools">
+          <UButton
+            v-for="item in toolButtons"
+            :key="item.id"
+            size="xs"
+            :color="tool === item.id ? 'primary' : 'neutral'"
+            :variant="tool === item.id ? 'solid' : 'soft'"
+            :icon="item.icon"
+            :aria-label="item.label"
+            :title="item.label"
+            @click="tool = item.id"
+          />
+          <span class="bf-annotator__sep" />
+          <UButton
+            size="xs"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-undo-2"
+            aria-label="Undo"
+            :disabled="undoStack.length === 0"
+            @click="undo"
+          />
+          <UButton
+            size="xs"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-redo-2"
+            aria-label="Redo"
+            :disabled="redoStack.length === 0"
+            @click="redo"
+          />
+          <UButton
+            size="xs"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-trash-2"
+            :disabled="!selectedId"
+            @click="deleteSelected"
+          >
+            Delete
+          </UButton>
+          <UButton
+            size="xs"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-eraser"
+            @click="clearAnnotations"
+          >
+            Clear
+          </UButton>
+        </div>
+        <div class="bf-annotator__palette">
+          <button
+            v-for="swatch in FEEDBACK_ANNOTATE_COLORS"
+            :key="swatch"
+            type="button"
+            class="bf-swatch"
+            :class="{ 'bf-swatch--active': color.toLowerCase() === swatch.toLowerCase() }"
+            :style="{ backgroundColor: swatch }"
+            :aria-label="`Color ${swatch}`"
+            @click="applyColor(swatch)"
+          />
+          <input
+            :value="color"
+            type="color"
+            class="bf-color"
+            aria-label="Custom color"
+            @input="applyColor($event.target.value)"
+          >
+          <UButton
+            v-for="width in FEEDBACK_ANNOTATE_STROKE_WIDTHS"
+            :key="width.id"
+            size="xs"
+            :color="strokeWidthId === width.id ? 'primary' : 'neutral'"
+            :variant="strokeWidthId === width.id ? 'solid' : 'soft'"
+            @click="strokeWidthId = width.id"
+          >
+            {{ width.label }}
+          </UButton>
+        </div>
       </div>
-      <div class="bf-annotator__palette">
-        <button
-          v-for="swatch in FEEDBACK_ANNOTATE_COLORS"
-          :key="swatch"
-          type="button"
-          class="bf-swatch"
-          :class="{ 'bf-swatch--active': color.toLowerCase() === swatch.toLowerCase() }"
-          :style="{ backgroundColor: swatch }"
-          :aria-label="`Color ${swatch}`"
-          @click="applyColor(swatch)"
-        />
-        <input
-          :value="color"
-          type="color"
-          class="bf-color"
-          aria-label="Custom color"
-          @input="applyColor($event.target.value)"
+
+      <div class="bf-annotator__toolbar-side">
+        <div
+          class="bf-annotator__text-edit"
+          :class="{ 'bf-annotator__text-edit--active': selectedAnnotation?.kind === 'text' }"
+          :aria-hidden="selectedAnnotation?.kind !== 'text'"
         >
-        <UButton
-          v-for="width in FEEDBACK_ANNOTATE_STROKE_WIDTHS"
-          :key="width.id"
-          size="xs"
-          :color="strokeWidthId === width.id ? 'primary' : 'neutral'"
-          :variant="strokeWidthId === width.id ? 'solid' : 'soft'"
-          @click="strokeWidthId = width.id"
+          <label for="bugfreedback-annotate-text-input">Edit text</label>
+          <input
+            id="bugfreedback-annotate-text-input"
+            ref="textInputRef"
+            v-model="selectedText"
+            type="text"
+            placeholder="Label text…"
+            :tabindex="selectedAnnotation?.kind === 'text' ? 0 : -1"
+          >
+          <UButton
+            v-for="size in FEEDBACK_TEXT_SIZES"
+            :key="size.id"
+            size="xs"
+            :color="selectedTextSize === size.id ? 'primary' : 'neutral'"
+            :variant="selectedTextSize === size.id ? 'solid' : 'soft'"
+            :tabindex="selectedAnnotation?.kind === 'text' ? 0 : -1"
+            @click="applyTextSize(size.id)"
+          >
+            {{ size.label }}
+          </UButton>
+          <UButton
+            size="xs"
+            :color="selectedTextBold ? 'primary' : 'neutral'"
+            :variant="selectedTextBold ? 'solid' : 'soft'"
+            aria-label="Bold"
+            :tabindex="selectedAnnotation?.kind === 'text' ? 0 : -1"
+            @click="toggleTextBold"
+          >
+            <span class="font-bold px-0.5">B</span>
+          </UButton>
+          <UButton
+            size="xs"
+            :color="selectedTextItalic ? 'primary' : 'neutral'"
+            :variant="selectedTextItalic ? 'solid' : 'soft'"
+            aria-label="Italic"
+            :tabindex="selectedAnnotation?.kind === 'text' ? 0 : -1"
+            @click="toggleTextItalic"
+          >
+            <span class="italic px-0.5">I</span>
+          </UButton>
+        </div>
+        <p
+          v-if="selectedAnnotation?.kind !== 'text'"
+          class="bf-annotator__hint"
         >
-          {{ width.label }}
-        </UButton>
+          Select to move · handles resize · Delete removes
+        </p>
       </div>
-      <div
-        v-if="selectedAnnotation?.kind === 'text'"
-        class="bf-annotator__text-edit"
-      >
-        <label for="bugfreedback-annotate-text-input">Edit text</label>
-        <input
-          id="bugfreedback-annotate-text-input"
-          ref="textInputRef"
-          v-model="selectedText"
-          type="text"
-          placeholder="Label text…"
-        >
-        <UButton
-          v-for="size in FEEDBACK_TEXT_SIZES"
-          :key="size.id"
-          size="xs"
-          :color="selectedTextSize === size.id ? 'primary' : 'neutral'"
-          :variant="selectedTextSize === size.id ? 'solid' : 'soft'"
-          @click="applyTextSize(size.id)"
-        >
-          {{ size.label }}
-        </UButton>
-        <UButton
-          size="xs"
-          :color="selectedTextBold ? 'primary' : 'neutral'"
-          :variant="selectedTextBold ? 'solid' : 'soft'"
-          aria-label="Bold"
-          @click="toggleTextBold"
-        >
-          <span class="font-bold px-0.5">B</span>
-        </UButton>
-        <UButton
-          size="xs"
-          :color="selectedTextItalic ? 'primary' : 'neutral'"
-          :variant="selectedTextItalic ? 'solid' : 'soft'"
-          aria-label="Italic"
-          @click="toggleTextItalic"
-        >
-          <span class="italic px-0.5">I</span>
-        </UButton>
-      </div>
-      <p
-        v-else
-        class="bf-annotator__hint"
-      >
-        Select to move · handles resize · Delete removes
-      </p>
     </div>
 
     <div class="bf-annotator__canvas-wrap">
@@ -710,5 +726,5 @@ const canvasCursor = computed(() => {
 </template>
 
 <style scoped>
-.bf-annotator{display:flex;flex:1;flex-direction:column;gap:.75rem;min-height:0}.bf-annotator__toolbar{display:flex;flex-direction:column;gap:.5rem}.bf-annotator__actions,.bf-annotator__palette,.bf-annotator__text-edit,.bf-annotator__tools{align-items:center;display:flex;flex-wrap:wrap;gap:.35rem}.bf-annotator__sep{background:rgba(0,0,0,.2);height:1.25rem;margin:0 .25rem;width:1px}.bf-annotator__hint{font-size:.75rem;margin:0;opacity:.75}.bf-annotator__canvas-wrap{background:hsla(240,4%,46%,.2);border:1px solid rgba(0,0,0,.12);border-radius:.5rem;flex:1;min-height:0;overflow:auto;position:relative}.bf-annotator__canvas{display:block;height:auto;margin:0 auto;max-width:100%;touch-action:none}.bf-annotator__actions{justify-content:flex-end}.bf-btn{align-items:center;background:hsla(0,0%,100%,.75);border:1px solid rgba(0,0,0,.15);border-radius:.375rem;color:inherit;cursor:pointer;display:inline-flex;font-size:.75rem;justify-content:center;padding:.35rem .65rem}.bf-btn:disabled{cursor:not-allowed;opacity:.45}.bf-btn--xs{font-size:.7rem;padding:.2rem .45rem}.bf-btn--active{background:var(--bugfreedback-primary,#3b82f6);border-color:transparent;color:var(--bugfreedback-primary-text,#fff)}.bf-swatch{border:2px solid rgba(0,0,0,.2);border-radius:9999px;cursor:pointer;height:1.35rem;padding:0;width:1.35rem}.bf-swatch--active{border-color:#fff;transform:scale(1.1)}.bf-color{background:transparent;border:0;cursor:pointer;height:1.6rem;padding:0;width:1.6rem}.bf-annotator__text-edit label{font-size:.75rem}.bf-annotator__text-edit input[type=text]{border:1px solid rgba(0,0,0,.2);border-radius:.375rem;flex:1;font-size:.875rem;min-width:8rem;padding:.25rem .5rem}
+.bf-annotator{display:flex;flex:1;flex-direction:column;gap:.75rem;min-height:0}.bf-annotator__toolbar{align-items:start;display:grid;gap:1rem;grid-template-columns:minmax(0,1fr) minmax(0,1fr);width:100%}.bf-annotator__toolbar-main{display:flex;flex-direction:column;gap:.5rem;min-width:0}.bf-annotator__toolbar-side{min-width:0;position:relative;width:100%}.bf-annotator__actions,.bf-annotator__palette,.bf-annotator__text-edit,.bf-annotator__tools{align-items:center;display:flex;flex-wrap:wrap;gap:.35rem}.bf-annotator__sep{background:rgba(0,0,0,.2);height:1.25rem;margin:0 .25rem;width:1px}.bf-annotator__hint{align-items:center;display:flex;font-size:.75rem;inset:0;margin:0;opacity:.75;padding:.25rem 0;pointer-events:none;position:absolute}.bf-annotator__text-edit{background:rgba(0,0,0,.2);border:1px solid hsla(0,0%,100%,.15);border-radius:.5rem;box-sizing:border-box;padding:.25rem .625rem;visibility:hidden;width:100%}.bf-annotator__text-edit--active{visibility:visible}.bf-annotator__canvas-wrap{background:hsla(240,4%,46%,.2);border:1px solid rgba(0,0,0,.12);border-radius:.5rem;flex:1;min-height:0;overflow:auto;position:relative}.bf-annotator__canvas{display:block;height:auto;margin:0 auto;max-width:100%;touch-action:none}.bf-annotator__actions{justify-content:flex-end}.bf-btn{align-items:center;background:hsla(0,0%,100%,.75);border:1px solid rgba(0,0,0,.15);border-radius:.375rem;color:inherit;cursor:pointer;display:inline-flex;font-size:.75rem;justify-content:center;padding:.35rem .65rem}.bf-btn:disabled{cursor:not-allowed;opacity:.45}.bf-btn--xs{font-size:.7rem;padding:.2rem .45rem}.bf-btn--active{background:var(--bugfreedback-primary,#3b82f6);border-color:transparent;color:var(--bugfreedback-primary-text,#fff)}.bf-swatch{border:2px solid rgba(0,0,0,.2);border-radius:9999px;cursor:pointer;height:1.35rem;padding:0;width:1.35rem}.bf-swatch--active{border-color:#fff;transform:scale(1.1)}.bf-color{background:transparent;border:0;cursor:pointer;height:1.6rem;padding:0;width:1.6rem}.bf-annotator__text-edit label{flex-shrink:0;font-size:.75rem;white-space:nowrap}.bf-annotator__text-edit input[type=text]{background:rgba(24,24,27,.9);border:1px solid hsla(0,0%,100%,.2);border-radius:.375rem;color:inherit;flex:1 1 8rem;font-size:.875rem;min-width:0;outline:none;padding:.25rem .5rem}
 </style>

@@ -319,6 +319,7 @@ const panelStyle = computed(() => {
   border-radius: 0.75rem;
   border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
 }
 .bf-panel--form {
   right: 1rem;
@@ -335,6 +336,7 @@ const panelStyle = computed(() => {
   max-height: 75vh;
   transform: translate(-50%, -50%);
   border-color: rgba(0, 0, 0, 0.1);
+  backdrop-filter: none;
 }
 .bf-panel__header {
   display: flex;

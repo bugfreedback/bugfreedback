@@ -47,7 +47,7 @@ describe('feedbackInteraction', () => {
 
   it('detects interactions inside the host', () => {
     const host = { matches: (sel: string) => sel === BUGFREEDBACK_HOST_SELECTOR }
-    expect(isBugfreedbackWidgetInteraction(host)).toBe(true)
+    expect(isBugfreedbackWidgetInteraction(host as unknown as EventTarget)).toBe(true)
     expect(isBugfreedbackWidgetInteraction(null)).toBe(false)
   })
 })

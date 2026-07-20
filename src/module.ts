@@ -92,11 +92,12 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     // Private secrets / adapter config — never expose to client.
+    // Cast: Nuxt infers export shape from defaults (`webhook` + `url`); options allow all providers.
     nuxt.options.runtimeConfig.bugfreedback = {
       ...(nuxt.options.runtimeConfig.bugfreedback as Record<string, unknown> | undefined),
       storage: options.storage,
       export: options.export,
-    }
+    } as typeof nuxt.options.runtimeConfig.bugfreedback
 
     // Bundle Lucide icons used by the widget so they render offline / during SSR.
     const iconOptions = nuxt.options as { icon?: {
