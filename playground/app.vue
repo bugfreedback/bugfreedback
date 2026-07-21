@@ -5,7 +5,10 @@
         <span class="demo__logo">bf</span>
         <span>Acme Dashboard</span>
       </div>
-      <nav class="demo__nav" aria-label="Demo navigation">
+      <nav
+        class="demo__nav"
+        aria-label="Demo navigation"
+      >
         <a href="#">Overview</a>
         <a href="#">Projects</a>
         <a href="#">Settings</a>
@@ -30,11 +33,21 @@
       </ul>
     </section>
 
-    <section class="demo__grid" aria-label="Sample dashboard cards">
-      <article v-for="card in cards" :key="card.title" class="demo__card">
+    <section
+      class="demo__grid"
+      aria-label="Sample dashboard cards"
+    >
+      <article
+        v-for="card in cards"
+        :key="card.title"
+        class="demo__card"
+      >
         <h2>{{ card.title }}</h2>
         <p>{{ card.body }}</p>
-        <button type="button" class="demo__card-btn">
+        <button
+          type="button"
+          class="demo__card-btn"
+        >
           {{ card.action }}
         </button>
       </article>
@@ -102,19 +115,19 @@ onMounted(async () => {
     return
   }
 
-    const rect = canvas.getBoundingClientRect()
-    const x = rect.left + rect.width * 0.35
-    const y = rect.top + rect.height * 0.42
-    const pointerOpts: PointerEventInit = {
-      bubbles: true,
-      clientX: x,
-      clientY: y,
-      pointerId: 1,
-      pointerType: 'mouse',
-      isPrimary: true,
-    }
-    canvas.dispatchEvent(new PointerEvent('pointerdown', pointerOpts))
-    canvas.dispatchEvent(new PointerEvent('pointerup', pointerOpts))
+  const rect = canvas.getBoundingClientRect()
+  const x = rect.left + rect.width * 0.35
+  const y = rect.top + rect.height * 0.42
+  const pointerOpts: PointerEventInit = {
+    bubbles: true,
+    clientX: x,
+    clientY: y,
+    pointerId: 1,
+    pointerType: 'mouse',
+    isPrimary: true,
+  }
+  canvas.dispatchEvent(new PointerEvent('pointerdown', pointerOpts))
+  canvas.dispatchEvent(new PointerEvent('pointerup', pointerOpts))
 
   await nextTick()
   const input = document.querySelector<HTMLInputElement>('#bugfreedback-annotate-text-input')
