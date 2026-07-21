@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.9](https://github.com/bugfreedback/bugfreedback/compare/v0.0.8...v0.0.9) (2026-07-21)
+
+
+### Bug Fixes
+
+* **docs:** place hero logo beside bugfreedback name ([d86079c](https://github.com/bugfreedback/bugfreedback/commit/d86079cce3fa6577ad77f05a99f8c062e200bf10))
+* **docs:** place hero logo beside bugfreedback name ([3f2a391](https://github.com/bugfreedback/bugfreedback/commit/3f2a39163e53d1ea30a22398e9bc3b08ed985405))
+
 ## [0.0.8](https://github.com/bugfreedback/bugfreedback/compare/v0.0.7...v0.0.8) (2026-07-21)
 
 
