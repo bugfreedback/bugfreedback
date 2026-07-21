@@ -18,11 +18,13 @@
       </ul>
     </div>
 
-    <BugfreedbackHost />
+    <BugfreedbackHost v-if="launcherReady" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { BUGFREEDBACK_LAUNCHER_EDGE_NUDGE_PX } from '../../src/runtime/constants'
+
 type BugfreedbackUiConfig = {
   buttonLayout?: 'horizontal' | 'vertical'
   position?: { edge?: 'left' | 'right' | 'top' | 'bottom', offsetX?: number, offsetY?: number }
@@ -32,10 +34,19 @@ definePageMeta({
   layout: false,
 })
 
+const launcherReady = ref(false)
 const config = useRuntimeConfig()
 const bugfreedback = config.public.bugfreedback as BugfreedbackUiConfig
+
+// Apply before BugfreedbackHost mounts so the launcher renders horizontally at the bottom.
 bugfreedback.buttonLayout = 'horizontal'
-bugfreedback.position = { edge: 'bottom', offsetX: 0, offsetY: 0 }
+bugfreedback.position = {
+  edge: 'bottom',
+  offsetX: 0,
+  // Counter the edge nudge so the full tab stays inside the 630px capture frame.
+  offsetY: -BUGFREEDBACK_LAUNCHER_EDGE_NUDGE_PX,
+}
+launcherReady.value = true
 
 useHead({
   style: [
@@ -46,6 +57,12 @@ useHead({
           height: 630px !important;
           min-height: 630px !important;
           overflow: hidden !important;
+        }
+        #nuxt-devtools-container,
+        .nuxt-devtools-icon,
+        .nuxt-devtools-nuxt-button,
+        [data-nuxt-devtools] {
+          display: none !important;
         }
       `,
     },
