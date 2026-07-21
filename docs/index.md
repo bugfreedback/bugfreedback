@@ -11,6 +11,9 @@ hero:
       text: Get started
       link: /guide/getting-started
     - theme: alt
+      text: Demo site
+      link: /guide/demo
+    - theme: alt
       text: Adapters
       link: /guide/adapters
     - theme: alt
@@ -24,6 +27,6 @@ features:
     details: Upload screenshots to GCS or S3-compatible buckets with durable public URLs.
   - title: Modular exports
     details: GitHub Issues, Linear, Jira, Notion, Slack, Asana, Trello, Webhook, and IFTTT.
-  - title: Themeable launcher
-    details: Colors, horizontal or vertical button layout, and edge position with offsets.
+  - title: Demo playground
+    details: Run npm run dev for a screenshot-ready example app with the widget on a mock dashboard.
 ---

@@ -55,6 +55,8 @@ npm run docs:dev     # VitePress site
 
 Maintainers: see [RELEASING.md](./RELEASING.md) for version bumps and npm publish.
 
+Docs & demo: `npm run docs:dev` · `npm run dev` (playground at http://localhost:3000)
+
 ## License
 
 MIT
