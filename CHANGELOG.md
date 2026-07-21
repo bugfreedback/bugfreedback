@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.4](https://github.com/bugfreedback/bugfreedback/compare/v0.0.3...v0.0.4) (2026-07-21)
+
+
+### Documentation
+
+* simplify README for integrators ([bbf8ecd](https://github.com/bugfreedback/bugfreedback/commit/bbf8ecd7e79e264874d234917568202fb04165ae))
+
 ## [0.0.3](https://github.com/bugfreedback/bugfreedback/compare/bugfreedback-v0.0.2...bugfreedback-v0.0.3) (2026-07-20)
 
 
@@ -16,13 +23,6 @@
 * remove prepare script so git installs use committed dist ([7ddcdde](https://github.com/bugfreedback/bugfreedback/commit/7ddcddee1ef9a4dac10d79d3787ade857f06033d))
 * stabilize annotator toolbar layout for 0.0.3 ([d51e3a1](https://github.com/bugfreedback/bugfreedback/commit/d51e3a1150a851a86513e1ace082bd3fa71d028f))
 * stop auto-importing runtime utils into host apps ([c6fff9b](https://github.com/bugfreedback/bugfreedback/commit/c6fff9b9b1454746f9ba317031477237a8d16511))
-
-## [0.0.3] - 2026-07-20
-
-### Bug Fixes
-
-- Restore annotator toolbar 50/50 layout (tools left, text edit right) so the edit panel no longer drops below the toolbar.
-- Reserve text-control height in the toolbar side panel so selecting a text annotation does not resize the toolbar region.
 
 ## [0.0.2] - 2026-07-19
 

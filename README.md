@@ -53,6 +53,8 @@ npm test
 npm run docs:dev     # VitePress site
 ```
 
+Maintainers: see [RELEASING.md](./RELEASING.md) for version bumps and npm publish.
+
 ## License
 
 MIT
