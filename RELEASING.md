@@ -8,8 +8,8 @@ This repo uses **release-please** for version bumps and publishes to npm from CI
 |----------|---------|---------|
 | `ci.yml` | push / PR to `main` | lint + test |
 | `pages.yml` | push to `main` | deploy docs site |
-| `release-please.yml` | push to `main` | open Release PR; **publish to npm** when a release is created |
-| `publish.yml` | human Release published, or **workflow_dispatch** | manual / recovery npm publish |
+| `release-please.yml` | push to `main` | open Release PR; dispatch `publish.yml` when a release is created |
+| `publish.yml` | workflow_dispatch (from release-please or manual) | build + publish to npm (Trusted Publishing) |
 
 ```text
 feat/fix PR ──merge──► main
@@ -21,14 +21,15 @@ feat/fix PR ──merge──► main
                           merge ──► release-please creates GitHub Release
                                       │
                                       ▼
-                              publish job (same workflow) ──► npm
+                              dispatch publish.yml ──► npm
 ```
 
-### Why npm publish lives in `release-please.yml`
+### Why publish goes through `publish.yml`
 
-release-please creates GitHub Releases using `GITHUB_TOKEN`. **Events from `GITHUB_TOKEN` do not trigger other workflows** ([GitHub docs](https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication#using-the-github_token-in-a-workflow)). So a separate `publish.yml` triggered by `release: published` **never runs** for release-please bot releases.
+1. release-please creates GitHub Releases with `GITHUB_TOKEN`, which does **not** trigger other workflows via `release: published`.
+2. npm **Trusted Publishing** is registered for `publish.yml` only — publishing from another workflow file returns `E404`.
 
-Human-created releases (`gh release create vX.Y.Z`) still trigger `publish.yml`.
+After a release-please Release PR merges, `release-please.yml` dispatches `publish.yml` with the new tag.
 
 ## Day-to-day release process
 
@@ -54,9 +55,10 @@ Merge **that** PR (not a hand-named `release/0.0.X` branch).
 
 ### 3. Confirm publish
 
-1. [Actions → release-please](https://github.com/bugfreedback/bugfreedback/actions/workflows/release-please.yml) — **`publish` job** should succeed
-2. [GitHub Releases](https://github.com/bugfreedback/bugfreedback/releases) — tag `vX.Y.Z`
-3. `npm view @bugfreedback/bugfreedback version`
+1. [Actions → release-please](https://github.com/bugfreedback/bugfreedback/actions/workflows/release-please.yml) — **`trigger-publish` job** dispatches `publish.yml`
+2. [Actions → publish](https://github.com/bugfreedback/bugfreedback/actions/workflows/publish.yml) — green run
+3. [GitHub Releases](https://github.com/bugfreedback/bugfreedback/releases) — tag `vX.Y.Z`
+4. `npm view @bugfreedback/bugfreedback version`
 
 ## Recovery: publish an existing release to npm
 
@@ -91,7 +93,7 @@ npm [Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) for `publis
 
 | Symptom | Likely cause | Fix |
 |---------|--------------|-----|
-| GitHub Release exists, npm unchanged | bot release did not trigger `publish.yml` (pre-fix) or publish job failed | run `publish.yml` workflow_dispatch with tag |
+| GitHub Release exists, npm unchanged | publish ran from `release-please.yml` (not Trusted Publisher) | run `publish.yml` with tag; merge workflow fix to dispatch `publish.yml` |
 | release-please succeeds but no Release PR | last commits were `docs:` / `chore:` | use `fix:` / `feat:` |
 | release-please fails on PR permission | org Actions policy | enable write + PR creation |
 | Wrong npm version from tag | legacy `bugfreedback-v*` tag | use `npm-publish.sh` tag normalization (fixed in CI) |
