@@ -2,7 +2,13 @@
   <div class="og-card">
     <div class="og-card__panel">
       <div class="og-card__brand">
-        <span class="og-card__logo">bf</span>
+        <img
+          src="/logo.png"
+          alt=""
+          class="og-card__logo"
+          width="44"
+          height="44"
+        >
         <span class="og-card__name">bugfreedback</span>
       </div>
       <h1 class="og-card__title">
@@ -97,18 +103,11 @@ useHead({
 }
 
 .og-card__logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   width: 2.75rem;
   height: 2.75rem;
-  border-radius: 0.65rem;
-  background: #0ea5e9;
-  color: #fff;
-  font-size: 0.95rem;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.35);
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .og-card__name {
