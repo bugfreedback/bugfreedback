@@ -1,13 +1,30 @@
 import { defineConfig } from 'vitepress'
+import {
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+  applyPageSeo,
+} from './seo'
 
 export default defineConfig({
-  title: 'bugfreedback',
-  description: 'Nuxt feedback widget with pluggable storage and export adapters',
+  title: SITE_NAME,
+  description: SITE_DESCRIPTION,
   base: '/bugfreedback/',
+  lang: 'en-US',
   cleanUrls: true,
+  head: [
+    ['link', { rel: 'icon', href: `${SITE_URL}hero-launcher.png`, type: 'image/png' }],
+  ],
+  sitemap: {
+    hostname: SITE_URL.replace(/\/$/, ''),
+  },
+  transformPageData(pageData, ctx) {
+    applyPageSeo(pageData, ctx)
+  },
   themeConfig: {
     nav: [
       { text: 'Guide', link: '/guide/getting-started' },
+      { text: 'About', link: '/about' },
       { text: 'Demo', link: '/guide/demo' },
       { text: 'Adapters', link: '/guide/adapters' },
       { text: 'GitHub', link: 'https://github.com/bugfreedback/bugfreedback' },
@@ -17,6 +34,7 @@ export default defineConfig({
         text: 'Introduction',
         items: [
           { text: 'Getting started', link: '/guide/getting-started' },
+          { text: 'About', link: '/about' },
           { text: 'Configuration', link: '/guide/configuration' },
           { text: 'Local demo', link: '/guide/demo' },
         ],

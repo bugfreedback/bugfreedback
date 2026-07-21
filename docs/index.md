@@ -1,15 +1,25 @@
 ---
 # https://vitepress.dev/reference/default-theme-home-page
 layout: home
+title: bugfreedback
+description: Self-hosted Nuxt feedback widget with screenshot capture, annotation, and exports to GitHub, Linear, Slack, and more — no external portal required.
+ogImage: /hero-launcher.png
+ogImageAlt: bugfreedback Feedback launcher button on the edge of your app
 
 hero:
   name: bugfreedback
   text: Feedback for Nuxt
   tagline: Capture, annotate, and route feedback reports to the tools your team already uses. Bug-free Feedback
+  image:
+    src: /hero-launcher.png
+    alt: Feedback launcher button on the edge of your app
   actions:
     - theme: brand
       text: Get started
       link: /guide/getting-started
+    - theme: alt
+      text: About
+      link: /about
     - theme: alt
       text: Local demo
       link: /guide/demo
