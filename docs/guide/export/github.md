@@ -36,7 +36,7 @@ export default defineNuxtConfig({
 | `BUGFREEDBACK_GITHUB_TOKEN` | PAT with issue write access |
 | `BUGFREEDBACK_GITHUB_OWNER` | Org or user (overrides `owner` when empty) |
 | `BUGFREEDBACK_GITHUB_REPO` | Repository name |
-| `GITHUB_FEEDBACK_*` | Legacy Wayfarer aliases |
+| `GITHUB_FEEDBACK_*` | Alternate names for the `BUGFREEDBACK_GITHUB_*` variables above |
 
 ## Issue body format
 
@@ -48,7 +48,9 @@ The adapter posts to `POST /repos/{owner}/{repo}/issues` with:
 
 Returns `{ id, url }` where `url` is the issue HTML URL.
 
-## Full stack example (Wayfarer-style)
+## Production example with auth
+
+Use this pattern when feedback should only be available outside production and reporters must be signed in:
 
 ```ts
 bugfreedback: {
