@@ -1,6 +1,6 @@
 {
   "name": "@bugfreedback/bugfreedback",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Nuxt feedback widget with pluggable storage and export adapters",
   "repository": {
     "type": "git",
