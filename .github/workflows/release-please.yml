@@ -8,7 +8,6 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  id-token: write
 
 jobs:
   release-please:
@@ -24,16 +23,15 @@ jobs:
           manifest-file: .release-please-manifest.json
           token: ${{ secrets.GITHUB_TOKEN }}
 
-  # release-please creates GitHub Releases with GITHUB_TOKEN, which does NOT
-  # trigger other workflows (including publish.yml). Publish in this workflow
-  # when release-please creates a release in the same run.
-  publish:
+  # npm Trusted Publishing is registered for publish.yml only. Dispatch that
+  # workflow instead of publishing inline here (inline publish gets E404).
+  trigger-publish:
     needs: release-please
     if: ${{ needs.release-please.outputs.releases_created == 'true' }}
     runs-on: ubuntu-latest
     permissions:
+      actions: write
       contents: read
-      id-token: write
     steps:
       - name: Resolve release tag
         id: tag
@@ -47,27 +45,11 @@ jobs:
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "Resolved release tag: $TAG"
 
-      - uses: actions/checkout@v4
-        with:
-          lfs: true
-          ref: ${{ steps.tag.outputs.tag }}
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          registry-url: https://registry.npmjs.org
-
-      - name: Ensure npm CLI supports trusted publishing
-        run: npm install -g npm@latest
-
-      - name: Build and publish to npm
+      - name: Dispatch publish.yml
         env:
-          RELEASE_TAG: ${{ steps.tag.outputs.tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION="$(echo "$RELEASE_TAG" | sed -E 's/^[a-zA-Z0-9_@/.-]+-v/v/; s/^v//')"
-          echo "Publishing @bugfreedback/bugfreedback@${VERSION} (from tag ${RELEASE_TAG})"
-          npm ci
-          npm run dev:prepare
-          npm run prepack
-          npm version "$VERSION" --no-git-tag-version --allow-same-version
-          npm publish --access public
+          gh workflow run publish.yml \
+            --repo "${{ github.repository }}" \
+            --ref main \
+            -f "tag=${{ steps.tag.outputs.tag }}"
