@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.7](https://github.com/bugfreedback/bugfreedback/compare/v0.0.6...v0.0.7) (2026-07-21)
+
+
+### Bug Fixes
+
+* **ci:** dispatch publish.yml for npm Trusted Publishing ([026e67a](https://github.com/bugfreedback/bugfreedback/commit/026e67a4e76d41d5e3bd6987256e254fdf42c1ab))
+* **ci:** dispatch publish.yml for npm Trusted Publishing ([848762a](https://github.com/bugfreedback/bugfreedback/commit/848762a1f93875e2ecd6f1f5ce399911e61a365b))
+
 ## [0.0.6](https://github.com/bugfreedback/bugfreedback/compare/v0.0.5...v0.0.6) (2026-07-21)
 
 
