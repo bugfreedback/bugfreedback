@@ -1,63 +1,54 @@
-# Demo site (playground)
+# Local demo
 
-The repo includes a **playground** Nuxt app for trying the widget and capturing documentation screenshots.
+Try bugfreedback in a minimal Nuxt app before wiring it into your project. The repository includes a **playground** that loads the module from source so you can exercise the full widget flow locally.
 
-## Run locally
+## Run the playground
 
-From the repository root:
+Clone the repo and start the dev server:
 
 ```bash
+git clone https://github.com/bugfreedback/bugfreedback.git
+cd bugfreedback
 npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`. The playground loads the module from `../src/module` (not npm), so you always exercise the latest source.
+Open `http://localhost:3000` (or the port Nuxt prints). Click **Feedback** on the right edge to walk through:
 
-Default playground config (`playground/nuxt.config.ts`):
+1. **Form** — title, description, optional email
+2. **Capture** — attach a screenshot of the current tab (browser permission required)
+3. **Annotate** — pen, shapes, text, redaction
+4. **Submit** — sends to the configured export adapter
 
-- `auth: 'none'` — no login required
-- `storage: { provider: 'none' }` — screenshots stay client-side unless you change config
-- `export: { provider: 'webhook', url: '…' }` — stub endpoint; submissions fail gracefully unless you point at a real webhook
+## Default playground config
 
-## Suggested screenshots
+The playground (`playground/nuxt.config.ts`) uses settings suited for local evaluation:
 
-Capture these for docs (save under `docs/public/screenshots/` — tracked with Git LFS):
+| Setting | Value | Effect |
+|---------|-------|--------|
+| `auth` | `'none'` | No login required |
+| `storage.provider` | `'none'` | Screenshots are not uploaded to cloud storage |
+| `export.provider` | `'webhook'` | POSTs to a stub URL unless you override it |
 
-| File | What to capture |
-|------|-----------------|
-| `launcher.png` | Full page showing the mid-right Feedback launcher |
-| `form.png` | Feedback form modal (title, description, screenshot toggle) |
-| `annotate.png` | Annotate step with toolbar + canvas |
-| `annotate-text.png` | Text tool selected — 50/50 toolbar with edit panel |
+To test a real export destination, set env vars or edit `playground/nuxt.config.ts` — see the [export guides](./export/webhook.md) for your provider.
 
-### Manual flow
+## Test annotate without screen capture
 
-1. Open `http://localhost:3000` (or whichever port Nuxt picks)
-2. Click **Feedback** → capture `launcher.png` and `form.png`
-3. Click **Include screenshot** and allow tab sharing → capture `annotate.png` and `annotate-text.png`
+Some environments block the Screen Capture API (headless browsers, restricted CI). Use these query params after `npm run dev`:
 
-### Demo URLs (no screen capture required)
-
-When the Screen Capture API is unavailable (headless browsers, some CI), open these URLs after `npm run dev`:
-
-| URL | Result |
+| URL | Opens |
 |-----|--------|
-| `/?demo=annotate` | Opens annotate step with a synthetic dashboard image |
-| `/?demo=annotate-text` | Same, plus Text tool with the edit panel visible |
+| `/?demo=annotate` | Annotate step with a synthetic dashboard image |
+| `/?demo=annotate-text` | Same, with the Text tool and edit panel active |
 
 Example: `http://localhost:3000/?demo=annotate-text`
 
-### Tips
+## Customize for your stack
 
-- Use a 1280×800 or 1440×900 viewport for consistent docs layout
-- Dark modal theme matches the default playground (`modalBgColor: #0f172a`)
-- Hide browser extensions / devtools for clean captures
-- After adding images, verify with `npm run docs:dev` (base path `/bugfreedback/`)
+Copy patterns from the playground into your app:
 
-## Wiring images in VitePress
+- **Theming** — `primaryColor`, `modalBgColor`, `buttonLayout`, `position` — see [Configuration](./configuration.md)
+- **Storage + export** — combine [Storage](./storage.md) with any [export provider](./adapters.md)
+- **Auth** — switch `auth` to `'required'` or `'optional'` and add `provideBugfreedbackAuth` — see [Getting started](./getting-started.md#auth-optional)
 
-```md
-![Feedback launcher](/screenshots/launcher.png)
-```
-
-Paths are relative to `docs/public/` and prefixed with the site `base` on GitHub Pages.
+When testing webhooks locally, point `BUGFREEDBACK_WEBHOOK_URL` at [webhook.site](https://webhook.site) or your own tunnel — see [Webhook export](./export/webhook.md#local-testing).

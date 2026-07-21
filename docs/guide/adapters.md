@@ -31,7 +31,7 @@ Route each submission to one export destination:
 ## Typical production stack
 
 ```ts
-// nuxt.config.ts — GitHub Issues + GCS screenshots (Wayfarer-style)
+// nuxt.config.ts — GitHub Issues + GCS storage
 export default defineNuxtConfig({
   modules: ['@nuxt/ui', '@bugfreedback/bugfreedback'],
   bugfreedback: {
@@ -52,4 +52,4 @@ export default defineNuxtConfig({
 })
 ```
 
-See [Demo site](./demo.md) to run the playground and [Configuration](./configuration.md) for theme and auth options.
+See [Local demo](./demo.md) to run the playground and [Configuration](./configuration.md) for theme and auth options.

@@ -25,7 +25,7 @@ export default defineNuxtConfig({
 | Variable | Purpose |
 |----------|---------|
 | `BUGFREEDBACK_GCS_BUCKET` | Bucket name (overrides config when empty) |
-| `FEEDBACK_GCS_BUCKET` | Legacy Wayfarer alias |
+| `FEEDBACK_GCS_BUCKET` | Alternate name (same as `BUGFREEDBACK_GCS_BUCKET`) |
 
 ### Bucket setup
 
@@ -98,4 +98,4 @@ bugfreedback: {
 
 Submissions **with** a screenshot attachment return **503** when storage is `none`. Text-only feedback still exports normally.
 
-Use `none` in the [playground](./demo.md) or when screenshots are not required.
+Use `none` for local development or when screenshots are not required. The [playground](./demo.md) uses this by default.

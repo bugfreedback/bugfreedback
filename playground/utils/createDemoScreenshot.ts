@@ -28,7 +28,7 @@ export function createDemoScreenshot(): string {
 
   ctx.fillStyle = '#0f172a'
   ctx.font = 'bold 36px Segoe UI, system-ui, sans-serif'
-  ctx.fillText('Example app for docs & screenshots', 80, 220)
+  ctx.fillText('Try the feedback widget locally', 80, 220)
 
   const cards = [
     { title: 'Active users', body: 'Sample metric card' },

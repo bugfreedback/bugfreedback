@@ -5,13 +5,13 @@ layout: home
 hero:
   name: bugfreedback
   text: Feedback for Nuxt
-  tagline: Capture, annotate, and route bug reports to the tools your team already uses.
+  tagline: Capture, annotate, and route feedback reports to the tools your team already uses. Bug-free Feedback
   actions:
     - theme: brand
       text: Get started
       link: /guide/getting-started
     - theme: alt
-      text: Demo site
+      text: Local demo
       link: /guide/demo
     - theme: alt
       text: Adapters
@@ -27,6 +27,6 @@ features:
     details: Upload screenshots to GCS or S3-compatible buckets with durable public URLs.
   - title: Modular exports
     details: GitHub Issues, Linear, Jira, Notion, Slack, Asana, Trello, Webhook, and IFTTT.
-  - title: Demo playground
-    details: Run npm run dev for a screenshot-ready example app with the widget on a mock dashboard.
+  - title: Local demo
+    details: Clone the repo and run npm run dev to try the widget on a sample Nuxt app before integrating it.
 ---

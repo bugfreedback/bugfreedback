@@ -45,9 +45,9 @@ Mount the host component once in your default layout:
 </template>
 ```
 
-## Try the demo
+## Try it locally
 
-Run the included playground to see the widget and capture screenshots for your own docs:
+Evaluate the widget in the included playground before adding it to your app:
 
 ```bash
 git clone https://github.com/bugfreedback/bugfreedback.git
@@ -56,7 +56,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000` and click **Feedback** on the right edge. See [Demo site](./demo.md) for screenshot checklist.
+Open `http://localhost:3000` and click **Feedback** on the right edge. See [Local demo](./demo.md) for default config and testing tips.
 
 ![Feedback launcher on the demo app](/screenshots/launcher.png)
 

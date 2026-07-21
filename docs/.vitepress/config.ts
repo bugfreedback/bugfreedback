@@ -18,7 +18,7 @@ export default defineConfig({
         items: [
           { text: 'Getting started', link: '/guide/getting-started' },
           { text: 'Configuration', link: '/guide/configuration' },
-          { text: 'Demo site', link: '/guide/demo' },
+          { text: 'Local demo', link: '/guide/demo' },
         ],
       },
       {

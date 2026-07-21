@@ -19,10 +19,10 @@
       <p class="demo__eyebrow">
         bugfreedback playground
       </p>
-      <h1>Example app for docs &amp; screenshots</h1>
+      <h1>Try the feedback widget locally</h1>
       <p class="demo__lede">
-        This Nuxt app loads the module from <code>../src/module</code>. Use the
-        <strong>Feedback</strong> launcher on the right edge to exercise the full flow:
+        This playground loads the module from <code>../src/module</code>. Click
+        <strong>Feedback</strong> on the right edge to walk through the full flow:
         form → optional capture → annotate → submit.
       </p>
       <ul class="demo__steps">
@@ -55,7 +55,7 @@
 
     <footer class="demo__footer">
       <p>
-        Run locally: <code>npm run dev</code> from the repo root · Docs:
+        Run locally: <code>npm run dev</code> · Docs:
         <a href="https://bugfreedback.github.io/bugfreedback/">bugfreedback.github.io</a>
       </p>
     </footer>
@@ -70,17 +70,17 @@ import { createDemoScreenshot } from './utils/createDemoScreenshot'
 const cards = [
   {
     title: 'Active users',
-    body: 'Sample metric card — useful background when capturing the launcher over a realistic UI.',
+    body: 'Sample dashboard content — the widget overlays your real app UI the same way.',
     action: 'View report',
   },
   {
     title: 'Open issues',
-    body: 'Feedback submissions from this demo can route to GitHub, Linear, Slack, and other adapters.',
+    body: 'Route submissions to GitHub, Linear, Slack, and other export adapters.',
     action: 'See queue',
   },
   {
     title: 'Deployments',
-    body: 'Screenshot the form, annotate step, and toolbar separately for documentation.',
+    body: 'Configure storage, export, and auth in nuxt.config.ts before shipping.',
     action: 'Open pipeline',
   },
 ]
