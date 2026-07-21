@@ -1,52 +1,55 @@
-# Adapters
+# Adapters overview
+
+bugfreedback separates **screenshot storage** from **export** (where feedback tickets land). Configure both in `nuxt.config.ts`; secrets can also come from environment variables (see each guide).
 
 ## Storage
 
-### GCS
+Upload annotated screenshots to object storage so export adapters can embed durable HTTPS URLs.
 
-```ts
-storage: {
-  provider: 'gcs',
-  bucket: 'my-feedback-screenshots',
-  objectPrefix: 'feedback/',
-}
-```
-
-Uses Application Default Credentials (`@google-cloud/storage`). Bucket objects should be publicly readable so issue trackers can embed screenshots.
-
-### S3 / S3-compatible
-
-```ts
-storage: {
-  provider: 's3',
-  bucket: 'my-feedback-screenshots',
-  region: 'us-east-1',
-  endpoint: 'https://minio.example.com', // optional
-  forcePathStyle: true,
-  publicBaseUrl: 'https://cdn.example.com',
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-}
-```
-
-Works with AWS S3, Cloudflare R2, MinIO, and other S3-compatible APIs.
-
-### none
-
-Disable screenshot uploads (`storage: { provider: 'none' }`). Submissions without screenshots still work; screenshot submissions return 503.
+| Provider | Guide |
+|----------|--------|
+| Google Cloud Storage | [GCS / storage](./storage.md#gcs) |
+| S3-compatible (AWS, R2, MinIO) | [S3 storage](./storage.md#s3) |
+| Disabled | [No storage](./storage.md#none) |
 
 ## Export
 
-| Provider | Key options |
-|----------|-------------|
-| `github` | `token`, `owner`, `repo`, `labels?` |
-| `linear` | `apiKey`, `teamId`, `labelIds?` |
-| `jira` | `baseUrl`, `email`, `apiToken`, `projectKey`, `issueType?` |
-| `notion` | `token`, `databaseId` |
-| `slack` | `webhookUrl`, `channel?` |
-| `asana` | `token`, `projectGid`, `workspaceGid?` |
-| `trello` | `apiKey`, `token`, `listId` |
-| `webhook` | `url`, `headers?` |
-| `ifttt` | `eventName`, `webhookKey` |
+Route each submission to one export destination:
 
-Each integration is a separate adapter behind a shared `ExportAdapter` interface.
+| Provider | Creates | Guide |
+|----------|---------|--------|
+| `github` | GitHub Issue | [GitHub](./export/github.md) |
+| `linear` | Linear issue | [Linear](./export/linear.md) |
+| `jira` | Jira issue | [Jira](./export/jira.md) |
+| `notion` | Notion database page | [Notion](./export/notion.md) |
+| `slack` | Slack message (incoming webhook) | [Slack](./export/slack.md) |
+| `asana` | Asana task | [Asana](./export/asana.md) |
+| `trello` | Trello card | [Trello](./export/trello.md) |
+| `webhook` | HTTP POST to your URL | [Webhook](./export/webhook.md) |
+| `ifttt` | IFTTT Maker Webhook trigger | [IFTTT](./export/ifttt.md) |
+
+## Typical production stack
+
+```ts
+// nuxt.config.ts — GitHub Issues + GCS screenshots (Wayfarer-style)
+export default defineNuxtConfig({
+  modules: ['@nuxt/ui', '@bugfreedback/bugfreedback'],
+  bugfreedback: {
+    enabled: true,
+    storage: {
+      provider: 'gcs',
+      bucket: process.env.BUGFREEDBACK_GCS_BUCKET || '',
+      objectPrefix: 'feedback/',
+    },
+    export: {
+      provider: 'github',
+      token: process.env.BUGFREEDBACK_GITHUB_TOKEN || '',
+      owner: 'your-org',
+      repo: 'your-app',
+      labels: ['feedback', 'from:widget'],
+    },
+  },
+})
+```
+
+See [Demo site](./demo.md) to run the playground and [Configuration](./configuration.md) for theme and auth options.
