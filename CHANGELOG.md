@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.8](https://github.com/bugfreedback/bugfreedback/compare/v0.0.7...v0.0.8) (2026-07-21)
+
+
+### Bug Fixes
+
+* **docs:** show full horizontal launcher in OG captures ([cefb610](https://github.com/bugfreedback/bugfreedback/commit/cefb610c4167cd70347864ce4029041522406b65))
+* **docs:** use JS VitePress theme entry for Pages CI ([db1cf3b](https://github.com/bugfreedback/bugfreedback/commit/db1cf3b74daddd7cd428c97d21e836fbb521ceb9))
+* **docs:** use JS VitePress theme entry for Pages CI ([e8969d4](https://github.com/bugfreedback/bugfreedback/commit/e8969d4e4ad8a61619746a3418c44f807fd2dbe7))
+
 ## [0.0.7](https://github.com/bugfreedback/bugfreedback/compare/v0.0.6...v0.0.7) (2026-07-21)
 
 
