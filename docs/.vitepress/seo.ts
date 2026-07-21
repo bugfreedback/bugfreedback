@@ -1,4 +1,4 @@
-import type { HeadConfig, PageData, SiteConfigContext } from 'vitepress'
+import type { HeadConfig, PageData } from 'vitepress'
 import pkg from '../../package.json'
 
 export const SITE_ORIGIN = 'https://bugfreedback.github.io'
@@ -85,8 +85,39 @@ export const SITE_KEYWORDS = [
   'no subscription feedback tool',
 ].join(', ')
 
-export const DEFAULT_OG_IMAGE = `${SITE_URL}screenshots/launcher.png`
-export const DEFAULT_OG_IMAGE_ALT = 'bugfreedback Feedback launcher on a sample Nuxt app'
+export const DEFAULT_OG_IMAGE = `${SITE_URL}og-share.png`
+export const DEFAULT_OG_IMAGE_ALT
+  = 'bugfreedback — Feedback for Nuxt with a horizontal Feedback launcher button'
+
+export type OgImageMeta = {
+  width: number
+  height: number
+  alt: string
+}
+
+/** Known Open Graph assets under docs/public (path → dimensions). */
+export const OG_IMAGE_CATALOG: Record<string, OgImageMeta> = {
+  '/og-share.png': {
+    width: 1200,
+    height: 630,
+    alt: DEFAULT_OG_IMAGE_ALT,
+  },
+  '/og-launcher-horizontal.png': {
+    width: 2400,
+    height: 160,
+    alt: 'bugfreedback horizontal Feedback launcher button',
+  },
+  '/hero-launcher.png': {
+    width: 264,
+    height: 660,
+    alt: 'bugfreedback Feedback launcher button on the edge of your app',
+  },
+  '/screenshots/launcher.png': {
+    width: 2290,
+    height: 667,
+    alt: 'bugfreedback Feedback launcher on a sample Nuxt app',
+  },
+}
 
 export function resolvePagePath(relativePath: string): string {
   return relativePath
@@ -130,7 +161,34 @@ export function resolveOgImage(pageData: PageData): string {
 }
 
 export function resolveOgImageAlt(pageData: PageData): string {
-  return String(pageData.frontmatter.ogImageAlt ?? DEFAULT_OG_IMAGE_ALT)
+  return String(pageData.frontmatter.ogImageAlt ?? resolveOgImageMeta(pageData).alt)
+}
+
+export function resolveOgImagePath(pageData: PageData): string {
+  const custom = pageData.frontmatter.ogImage ?? pageData.frontmatter.image
+  if (typeof custom === 'string' && custom.length > 0) {
+    if (custom.startsWith('http')) {
+      try {
+        const url = new URL(custom)
+        return url.pathname.replace(new RegExp(`^${SITE_BASE.replace(/\/$/, '')}`), '') || '/'
+      }
+      catch {
+        return custom
+      }
+    }
+    return custom.startsWith('/') ? custom : `/${custom}`
+  }
+  return '/og-share.png'
+}
+
+export function resolveOgImageMeta(pageData: PageData): OgImageMeta {
+  const customAlt = pageData.frontmatter.ogImageAlt
+  const path = resolveOgImagePath(pageData)
+  const catalog = OG_IMAGE_CATALOG[path]
+  const width = Number(pageData.frontmatter.ogImageWidth ?? catalog?.width ?? 1200)
+  const height = Number(pageData.frontmatter.ogImageHeight ?? catalog?.height ?? 630)
+  const alt = String(customAlt ?? catalog?.alt ?? DEFAULT_OG_IMAGE_ALT)
+  return { width, height, alt }
 }
 
 function metaTag(
@@ -209,7 +267,7 @@ export function buildSocialHead(pageData: PageData): HeadConfig[] {
   const description = resolvePageDescription(pageData)
   const url = resolvePageUrl(pageData.relativePath)
   const image = resolveOgImage(pageData)
-  const imageAlt = resolveOgImageAlt(pageData)
+  const { width: imageWidth, height: imageHeight, alt: imageAlt } = resolveOgImageMeta(pageData)
 
   const nuxtVueTags = NUXT_VUE_KEYWORDS.slice(0, 8).join(', ')
   const bugTrackerTags = BUG_TRACKER_CATEGORY_KEYWORDS.slice(0, 6).join(', ')
@@ -253,8 +311,11 @@ export function buildSocialHead(pageData: PageData): HeadConfig[] {
     metaTag('og:site_name', SITE_NAME, 'property'),
     metaTag('og:locale', 'en_US', 'property'),
     metaTag('og:image', image, 'property'),
+    metaTag('og:image:secure_url', image.replace(/^http:\/\//, 'https://'), 'property'),
     metaTag('og:image:alt', imageAlt, 'property'),
     metaTag('og:image:type', 'image/png', 'property'),
+    metaTag('og:image:width', String(imageWidth), 'property'),
+    metaTag('og:image:height', String(imageHeight), 'property'),
     metaTag('twitter:card', 'summary_large_image'),
     metaTag('twitter:title', title),
     metaTag('twitter:description', description),
@@ -268,7 +329,7 @@ export function buildSocialHead(pageData: PageData): HeadConfig[] {
   ]
 }
 
-export function applyPageSeo(pageData: PageData, _ctx: SiteConfigContext): void {
+export function applyPageSeo(pageData: PageData, _ctx?: unknown): void {
   pageData.frontmatter.head ??= []
   const head = pageData.frontmatter.head as HeadConfig[]
   head.push(...buildSocialHead(pageData))

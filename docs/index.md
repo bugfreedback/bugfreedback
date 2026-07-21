@@ -3,8 +3,8 @@
 layout: home
 title: bugfreedback
 description: Self-hosted Nuxt feedback widget with screenshot capture, annotation, and exports to GitHub, Linear, Slack, and more — no external portal required.
-ogImage: /hero-launcher.png
-ogImageAlt: bugfreedback Feedback launcher button on the edge of your app
+ogImage: /og-share.png
+ogImageAlt: bugfreedback — Feedback for Nuxt with a horizontal Feedback launcher button
 
 hero:
   name: bugfreedback
