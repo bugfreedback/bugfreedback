@@ -5,7 +5,12 @@ import { nanoid } from 'nanoid'
 import { BUGFREEDBACK_ANNOTATE_SCALE } from '../constants'
 import { collectFeedbackMetadata } from '../utils/collectFeedbackMetadata'
 import { captureTabScreenshot } from '../utils/captureTabScreenshot'
-import { waitForNextPaints, withFeedbackOverlayHidden } from '../utils/hideFeedbackOverlayForCapture'
+import {
+  awaitCaptureGuideDismissed,
+  hideCaptureGuideElement,
+  waitForNextPaints,
+  withFeedbackOverlayHidden,
+} from '../utils/hideFeedbackOverlayForCapture'
 import { scaleImageDataUrl } from '../utils/scaleImageDataUrl'
 import { useBugfreedbackAuth } from './useBugfreedbackAuth'
 
@@ -102,7 +107,10 @@ export function useBugfreedbackWidget() {
       const rawDataUrl = await withFeedbackOverlayHidden(() =>
         captureTabScreenshot({
           onPermissionGranted: async () => {
+            hideCaptureGuideElement()
             captureGuideVisible.value = false
+            await nextTick()
+            await awaitCaptureGuideDismissed()
           },
         }),
       )

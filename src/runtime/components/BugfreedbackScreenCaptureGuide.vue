@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { BUGFREEDBACK_CAPTURE_GUIDE_ROOT_ID } from '../constants'
+import type { CaptureCardAnchor } from '../utils/resolveCapturePermissionGuide'
 import { detectCaptureEnvironment } from '../utils/detectCaptureEnvironment'
 import { resolveCapturePermissionGuide } from '../utils/resolveCapturePermissionGuide'
 
@@ -16,7 +17,25 @@ const targetStyle = computed(() => ({
   left: `${guide.value.target.leftPercent}%`,
 }))
 
-const layoutClass = computed(() => `bf-capture-guide__layout--${guide.value.placement}`)
+function cardTransform(anchor: CaptureCardAnchor): string {
+  if (anchor === 'left') {
+    return 'translate(0, -50%)'
+  }
+  if (anchor === 'right') {
+    return 'translate(-100%, -50%)'
+  }
+  return 'translate(-50%, 0)'
+}
+
+const cardStyle = computed(() => ({
+  top: `${guide.value.card.topPercent}%`,
+  left: `${guide.value.card.leftPercent}%`,
+  transform: cardTransform(guide.value.card.anchor),
+}))
+
+const arrowClass = computed(
+  () => `bf-capture-guide__card-arrow--${guide.value.arrow}`,
+)
 
 function renderStepSegments(step: string): { text: string, bold: boolean }[] {
   return step.split(/(\*\*[^*]+\*\*)/g).filter(Boolean).map((part) => {
@@ -42,21 +61,24 @@ function renderStepSegments(step: string): { text: string, bold: boolean }[] {
         aria-hidden="true"
       />
 
-      <div
-        class="bf-capture-guide__layout"
-        :class="layoutClass"
-      >
+      <div class="bf-capture-guide__layout">
         <div
+          v-if="guide.showTarget"
           class="bf-capture-guide__target"
+          :class="{ 'bf-capture-guide__target--default': guide.isDefault }"
           :style="targetStyle"
           aria-hidden="true"
         >
           <span class="bf-capture-guide__target-ring" />
         </div>
 
-        <div class="bf-capture-guide__card">
+        <div
+          class="bf-capture-guide__card"
+          :style="cardStyle"
+        >
           <span
             class="bf-capture-guide__card-arrow"
+            :class="arrowClass"
             aria-hidden="true"
           />
           <h2 id="bf-capture-guide-title">
@@ -102,22 +124,6 @@ function renderStepSegments(step: string): { text: string, bold: boolean }[] {
   inset: 0;
 }
 
-.bf-capture-guide__layout--center-modal .bf-capture-guide__card {
-  position: absolute;
-  left: 50%;
-  bottom: 10%;
-  transform: translateX(-50%);
-  max-width: min(24rem, calc(100vw - 2rem));
-}
-
-.bf-capture-guide__layout--top-center-bar .bf-capture-guide__card {
-  position: absolute;
-  left: 50%;
-  top: 22%;
-  transform: translateX(-50%);
-  max-width: min(24rem, calc(100vw - 2rem));
-}
-
 .bf-capture-guide__target {
   position: absolute;
   transform: translate(-50%, -50%);
@@ -125,20 +131,22 @@ function renderStepSegments(step: string): { text: string, bold: boolean }[] {
 
 .bf-capture-guide__target-ring {
   display: block;
-  width: 6rem;
-  height: 3.5rem;
+  width: 5.5rem;
+  height: 3rem;
   border: 2px dashed rgba(255, 255, 255, 0.9);
-  border-radius: 0.65rem;
+  border-radius: 0.55rem;
   box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.25);
 }
 
-.bf-capture-guide__layout--center-modal .bf-capture-guide__target-ring {
-  width: 7rem;
-  height: 4rem;
+.bf-capture-guide__target--default .bf-capture-guide__target-ring {
+  width: 4.5rem;
+  height: 2.5rem;
+  opacity: 0.75;
 }
 
 .bf-capture-guide__card {
-  position: relative;
+  position: absolute;
+  max-width: min(22rem, calc(100vw - 2rem));
   padding: 1rem 1.15rem;
   border-radius: 0.75rem;
   background: #f8fafc;
@@ -149,25 +157,44 @@ function renderStepSegments(step: string): { text: string, bold: boolean }[] {
 
 .bf-capture-guide__card-arrow {
   position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.bf-capture-guide__card-arrow--up {
   left: 50%;
   top: -0.75rem;
   transform: translateX(-50%);
-  width: 0;
-  height: 0;
   border-left: 0.65rem solid transparent;
   border-right: 0.65rem solid transparent;
   border-bottom: 0.75rem solid #f8fafc;
 }
 
-.bf-capture-guide__layout--top-center-bar .bf-capture-guide__card-arrow {
-  top: auto;
+.bf-capture-guide__card-arrow--down {
+  left: 50%;
   bottom: -0.75rem;
-  border-bottom: none;
+  transform: translateX(-50%);
+  border-left: 0.65rem solid transparent;
+  border-right: 0.65rem solid transparent;
   border-top: 0.75rem solid #f8fafc;
 }
 
-.bf-capture-guide__layout--top-center-bar .bf-capture-guide__target {
-  top: 8% !important;
+.bf-capture-guide__card-arrow--left {
+  left: -0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 0.65rem solid transparent;
+  border-bottom: 0.65rem solid transparent;
+  border-right: 0.75rem solid #f8fafc;
+}
+
+.bf-capture-guide__card-arrow--right {
+  right: -0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 0.65rem solid transparent;
+  border-bottom: 0.65rem solid transparent;
+  border-left: 0.75rem solid #f8fafc;
 }
 
 .bf-capture-guide__card h2 {

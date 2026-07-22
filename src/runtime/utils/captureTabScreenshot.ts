@@ -35,7 +35,7 @@ export async function captureTabScreenshot(options?: CaptureTabScreenshotOptions
   })
 
   await options?.onPermissionGranted?.()
-  await waitForNextPaints(2)
+  await waitForNextPaints(3)
 
   try {
     const track = stream.getVideoTracks()[0]

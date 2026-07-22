@@ -1,11 +1,16 @@
 import { describe, expect, it } from 'vitest'
 import { collectFeedbackMetadata } from '../src/runtime/utils/collectFeedbackMetadata'
 import {
+  hideCaptureGuideElement,
+  waitForNextPaints,
+} from '../src/runtime/utils/hideFeedbackOverlayForCapture'
+import {
   clearFeedbackConsoleRing,
   getFeedbackConsoleRing,
   pushFeedbackConsoleEntry,
 } from '../src/runtime/utils/feedbackConsoleRing'
 import {
+  BUGFREEDBACK_CAPTURE_GUIDE_ROOT_ID,
   BUGFREEDBACK_HOST_SELECTOR,
   BUGFREEDBACK_ROOT_ID,
 } from '../src/runtime/constants'
@@ -13,6 +18,31 @@ import { isBugfreedbackWidgetInteraction } from '../src/runtime/utils/feedbackIn
 import { buildS3PublicUrl } from '../src/runtime/server/adapters/storage/s3'
 import { scaleDimensions } from '../src/runtime/utils/scaleImageDataUrl'
 import { resolveViewportCropRect } from '../src/runtime/utils/resolveViewportCropRect'
+
+describe('hideCaptureGuideElement', () => {
+  it('hides the teleported capture guide root when present', () => {
+    if (typeof document === 'undefined') {
+      return
+    }
+
+    const guide = document.createElement('div')
+    guide.id = BUGFREEDBACK_CAPTURE_GUIDE_ROOT_ID
+    document.body.appendChild(guide)
+
+    hideCaptureGuideElement(document)
+    expect(guide.style.visibility).toBe('hidden')
+    expect(guide.style.opacity).toBe('0')
+    expect(guide.style.pointerEvents).toBe('none')
+
+    guide.remove()
+  })
+})
+
+describe('waitForNextPaints', () => {
+  it('resolves after scheduling paint frames', async () => {
+    await expect(waitForNextPaints(1)).resolves.toBeUndefined()
+  })
+})
 
 describe('feedbackConsoleRing', () => {
   it('stores recent console entries', () => {
