@@ -70,6 +70,12 @@ useHead({
         [data-nuxt-devtools] {
           display: none !important;
         }
+        #bugfreedback-root .bf-launcher {
+          left: auto !important;
+          /* ~one button width inset from the right edge */
+          right: 6.25rem !important;
+          transform: translateY(0) !important;
+        }
       `,
     },
   ],
