@@ -103,7 +103,7 @@ export const OG_IMAGE_CATALOG: Record<string, OgImageMeta> = {
     alt: DEFAULT_OG_IMAGE_ALT,
   },
   '/og-launcher-horizontal.png': {
-    width: 440,
+    width: 560,
     height: 160,
     alt: 'bugfreedback horizontal Feedback launcher button',
   },
