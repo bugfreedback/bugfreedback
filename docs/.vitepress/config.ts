@@ -13,7 +13,9 @@ export default defineConfig({
   lang: 'en-US',
   cleanUrls: true,
   head: [
-    ['link', { rel: 'icon', href: `${SITE_URL}hero-launcher.png`, type: 'image/png' }],
+    ['link', { rel: 'icon', href: `${SITE_URL}favicon.png`, type: 'image/png', sizes: '32x32' }],
+    ['link', { rel: 'icon', href: `${SITE_URL}favicon-16.png`, type: 'image/png', sizes: '16x16' }],
+    ['link', { rel: 'apple-touch-icon', href: `${SITE_URL}apple-touch-icon.png`, sizes: '180x180' }],
   ],
   sitemap: {
     hostname: SITE_URL.replace(/\/$/, ''),
