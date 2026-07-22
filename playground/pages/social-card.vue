@@ -70,6 +70,11 @@ useHead({
         [data-nuxt-devtools] {
           display: none !important;
         }
+        #bugfreedback-root .bf-launcher {
+          left: auto !important;
+          right: 0 !important;
+          transform: translateY(0) !important;
+        }
       `,
     },
   ],
