@@ -17,6 +17,7 @@ const {
   email,
   errorMessage,
   isEnabled,
+  captureGuideVisible,
   start,
   close,
   includeScreenshot,
@@ -299,6 +300,7 @@ const panelStyle = computed(() => {
         </div>
       </div>
     </div>
+    <BugfreedbackScreenCaptureGuide v-if="captureGuideVisible" />
   </Teleport>
 </template>
 
