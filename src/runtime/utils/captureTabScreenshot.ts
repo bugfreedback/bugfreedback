@@ -1,11 +1,17 @@
 import { resolveViewportCropRect } from './resolveViewportCropRect'
+import { waitForNextPaints } from './hideFeedbackOverlayForCapture'
+
+export type CaptureTabScreenshotOptions = {
+  /** Called after the user grants display-media permission and before the frame is grabbed. */
+  onPermissionGranted?: () => void | Promise<void>
+}
 
 /**
  * Capture the current tab (preferred) via the Screen Capture API and return a PNG data URL.
  * Crops to the layout viewport when the frame includes browser chrome.
  * Stops all media tracks immediately after grabbing one frame.
  */
-export async function captureTabScreenshot(): Promise<string> {
+export async function captureTabScreenshot(options?: CaptureTabScreenshotOptions): Promise<string> {
   if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getDisplayMedia) {
     throw new Error('Screen capture is not supported in this browser')
   }
@@ -27,6 +33,9 @@ export async function captureTabScreenshot(): Promise<string> {
     surfaceSwitching?: 'include' | 'exclude'
     systemAudio?: 'include' | 'exclude'
   })
+
+  await options?.onPermissionGranted?.()
+  await waitForNextPaints(2)
 
   try {
     const track = stream.getVideoTracks()[0]

@@ -1,6 +1,11 @@
 /** Root element id for the bugfreedback widget (modal dismiss guard). */
 export const BUGFREEDBACK_ROOT_ID = 'bugfreedback-root'
 
+export const BUGFREEDBACK_CAPTURE_GUIDE_ROOT_ID = 'bugfreedback-capture-guide-root'
+
+/** Full-screen capture permission guide (above page, below native browser chrome). */
+export const BUGFREEDBACK_CAPTURE_GUIDE_Z_INDEX = 10060
+
 export const BUGFREEDBACK_HOST_SELECTOR = `#${BUGFREEDBACK_ROOT_ID}`
 
 /** Mid-edge vertical/horizontal tab nudge (px). */

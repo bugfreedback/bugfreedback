@@ -1,10 +1,11 @@
 import { computed, useRuntimeConfig, useState } from '#imports'
+import { nextTick } from 'vue'
 import { $fetch } from 'ofetch'
 import { nanoid } from 'nanoid'
 import { BUGFREEDBACK_ANNOTATE_SCALE } from '../constants'
 import { collectFeedbackMetadata } from '../utils/collectFeedbackMetadata'
 import { captureTabScreenshot } from '../utils/captureTabScreenshot'
-import { withFeedbackOverlayHidden } from '../utils/hideFeedbackOverlayForCapture'
+import { waitForNextPaints, withFeedbackOverlayHidden } from '../utils/hideFeedbackOverlayForCapture'
 import { scaleImageDataUrl } from '../utils/scaleImageDataUrl'
 import { useBugfreedbackAuth } from './useBugfreedbackAuth'
 
@@ -32,6 +33,7 @@ export function useBugfreedbackWidget() {
   const email = useState('bugfreedback-email', () => '')
   const errorMessage = useState<string | null>('bugfreedback-error', () => null)
   const successMessage = useState<string | null>('bugfreedback-success', () => null)
+  const captureGuideVisible = useState('bugfreedback-capture-guide-visible', () => false)
 
   const isEnabled = computed(() => Boolean(publicConfig.value.enabled))
   const authMode = computed(() => publicConfig.value.auth ?? 'optional')
@@ -57,6 +59,7 @@ export function useBugfreedbackWidget() {
     step.value = 'idle'
     screenshotDataUrl.value = null
     originalScreenshotDataUrl.value = null
+    captureGuideVisible.value = false
     resetFormFields()
   }
 
@@ -88,9 +91,21 @@ export function useBugfreedbackWidget() {
     errorMessage.value = null
     step.value = 'capture'
     originalScreenshotDataUrl.value = null
+    captureGuideVisible.value = true
+
+    if (import.meta.client) {
+      await nextTick()
+      await waitForNextPaints(2)
+    }
 
     try {
-      const rawDataUrl = await withFeedbackOverlayHidden(() => captureTabScreenshot())
+      const rawDataUrl = await withFeedbackOverlayHidden(() =>
+        captureTabScreenshot({
+          onPermissionGranted: async () => {
+            captureGuideVisible.value = false
+          },
+        }),
+      )
       const dataUrl = await scaleImageDataUrl(rawDataUrl, BUGFREEDBACK_ANNOTATE_SCALE)
       originalScreenshotDataUrl.value = dataUrl
       step.value = 'annotate'
@@ -107,6 +122,9 @@ export function useBugfreedbackWidget() {
         errorMessage.value = message
       }
       step.value = 'form'
+    }
+    finally {
+      captureGuideVisible.value = false
     }
   }
 
@@ -204,6 +222,7 @@ export function useBugfreedbackWidget() {
     email,
     errorMessage,
     successMessage,
+    captureGuideVisible,
     isEnabled,
     start,
     close,
