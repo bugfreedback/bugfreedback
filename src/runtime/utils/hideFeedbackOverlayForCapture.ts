@@ -1,4 +1,4 @@
-import { BUGFREEDBACK_ROOT_ID } from '../constants'
+import { BUGFREEDBACK_CAPTURE_GUIDE_ROOT_ID, BUGFREEDBACK_ROOT_ID } from '../constants'
 
 /** Wait for two animation frames so CSS visibility updates paint before capture. */
 export function waitForNextPaints(frames: number = 2): Promise<void> {
@@ -21,6 +21,29 @@ export function waitForNextPaints(frames: number = 2): Promise<void> {
     }
     step(frames)
   })
+}
+
+/** Immediately hide the teleported capture-permission guide (lives outside #bugfreedback-root). */
+export function hideCaptureGuideElement(doc?: Document): void {
+  const root = doc?.getElementById(BUGFREEDBACK_CAPTURE_GUIDE_ROOT_ID)
+  if (!root) {
+    return
+  }
+  root.style.visibility = 'hidden'
+  root.style.opacity = '0'
+  root.style.pointerEvents = 'none'
+}
+
+/**
+ * Hide the capture guide and wait for the browser to paint without it before grabbing a frame.
+ */
+export async function awaitCaptureGuideDismissed(options?: {
+  doc?: Document
+  paintFrames?: number
+}): Promise<void> {
+  const doc = options?.doc ?? (typeof document !== 'undefined' ? document : undefined)
+  hideCaptureGuideElement(doc)
+  await waitForNextPaints(options?.paintFrames ?? 3)
 }
 
 /**
