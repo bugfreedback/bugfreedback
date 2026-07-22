@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.10](https://github.com/bugfreedback/bugfreedback/compare/v0.0.9...v0.0.10) (2026-07-22)
+
+
+### Features
+
+* **capture:** add OS/browser screen-share permission guide overlay ([409532b](https://github.com/bugfreedback/bugfreedback/commit/409532bd8ee8e23d9ed4dac3e13ee568c5957673))
+* **capture:** add screen-share permission guide overlay ([784bdfd](https://github.com/bugfreedback/bugfreedback/commit/784bdfda2b3bfa4d7e3fb051cc056e3eb04eb455))
+* **capture:** refine permission guides and hide overlay before screenshot ([43813c7](https://github.com/bugfreedback/bugfreedback/commit/43813c784184370c3a80c5fb0ad94cb8e030d50a))
+* **capture:** refine permission guides and hide overlay before screenshot ([a2e0c2a](https://github.com/bugfreedback/bugfreedback/commit/a2e0c2a9e58d61d22f34a99216d8dcaad8e10bd3))
+
+
+### Bug Fixes
+
+* **docs:** inset OG share card Feedback button from right edge ([a031273](https://github.com/bugfreedback/bugfreedback/commit/a0312738ebaa1bbeed131b686555b016d8701f40))
+
 ## [0.0.9](https://github.com/bugfreedback/bugfreedback/compare/v0.0.8...v0.0.9) (2026-07-21)
 
 
