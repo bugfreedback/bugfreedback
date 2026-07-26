@@ -35,20 +35,45 @@ describe('detectCaptureEnvironment', () => {
     expect(detectCaptureOs(ua)).toBe('ios')
     expect(detectCaptureBrowser(ua)).toBe('safari')
   })
+
+  it('detects Chrome on iOS via CriOS token', () => {
+    const ua = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/120.0.6099.119 Mobile/15E148 Safari/604.1'
+    expect(detectCaptureEnvironment(ua)).toEqual({ os: 'ios', browser: 'chrome' })
+  })
+
+  it('detects Firefox on iOS via FxiOS token', () => {
+    const ua = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/121.0 Mobile/15E148 Safari/605.1.15'
+    expect(detectCaptureEnvironment(ua)).toEqual({ os: 'ios', browser: 'firefox' })
+  })
+
+  it('detects Chrome on Android', () => {
+    const ua = 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36'
+    expect(detectCaptureEnvironment(ua)).toEqual({ os: 'android', browser: 'chrome' })
+  })
+
+  it('detects Firefox on Android', () => {
+    const ua = 'Mozilla/5.0 (Android 14; Mobile; rv:121.0) Gecko/121.0 Firefox/121.0'
+    expect(detectCaptureEnvironment(ua)).toEqual({ os: 'android', browser: 'firefox' })
+  })
 })
 
 describe('resolveCapturePermissionGuide', () => {
   it('covers all supported browser and OS combinations', () => {
     expect(__guideKeysForTests().sort()).toEqual([
+      'chrome:android',
+      'chrome:ios',
       'chrome:linux',
       'chrome:macos',
       'chrome:windows',
       'edge:linux',
       'edge:macos',
       'edge:windows',
+      'firefox:android',
+      'firefox:ios',
       'firefox:linux',
       'firefox:macos',
       'firefox:windows',
+      'safari:ios',
       'safari:macos',
     ])
   })
@@ -125,11 +150,46 @@ describe('resolveCapturePermissionGuide', () => {
     expect(guide.steps.join(' ')).not.toMatch(/This Tab/)
   })
 
-  it('uses default top-center instructions for Safari on iOS', () => {
+  it('returns Safari iOS guidance for tab sharing with a center target ring', () => {
     const guide = resolveCapturePermissionGuide({ os: 'ios', browser: 'safari' })
-    expect(guide.isDefault).toBe(true)
-    expect(guide.arrow).toBe('down')
-    expect(guide.card.topPercent).toBeLessThan(guide.target.topPercent)
+    expect(guide.isDefault).toBe(false)
+    expect(guide.heading).toMatch(/tab/i)
+    expect(guide.target.leftPercent).toBe(50)
+    expect(guide.steps.join(' ')).toMatch(/This Tab/)
+    expect(guide.steps.join(' ')).toMatch(/Settings/)
+    expect(guide.steps).toHaveLength(3)
+  })
+
+  it('returns Chrome iOS guidance with tap-oriented copy', () => {
+    const guide = resolveCapturePermissionGuide({ os: 'ios', browser: 'chrome' })
+    expect(guide.isDefault).toBe(false)
+    expect(guide.steps.join(' ')).toMatch(/Chrome/)
+    expect(guide.steps.join(' ')).toMatch(/Tap/)
+    expect(guide.steps.join(' ')).toMatch(/This Tab/)
+  })
+
+  it('returns Chrome Android guidance with click-oriented copy', () => {
+    const guide = resolveCapturePermissionGuide({ os: 'android', browser: 'chrome' })
+    expect(guide.isDefault).toBe(false)
+    expect(guide.steps.join(' ')).toMatch(/Chrome/)
+    expect(guide.steps.join(' ')).toMatch(/Click/)
+    expect(guide.steps.join(' ')).toMatch(/This Tab/)
+  })
+
+  it('returns Firefox iOS guidance with a center target ring', () => {
+    const guide = resolveCapturePermissionGuide({ os: 'ios', browser: 'firefox' })
+    expect(guide.isDefault).toBe(false)
+    expect(guide.showTarget).toBe(true)
+    expect(guide.steps.join(' ')).toMatch(/Firefox/)
+    expect(guide.steps.join(' ')).toMatch(/This Tab/)
+  })
+
+  it('returns Firefox Android guidance with a center target ring', () => {
+    const guide = resolveCapturePermissionGuide({ os: 'android', browser: 'firefox' })
+    expect(guide.isDefault).toBe(false)
+    expect(guide.showTarget).toBe(true)
+    expect(guide.steps.join(' ')).toMatch(/This Tab/)
+    expect(guide.steps.join(' ')).toMatch(/Android/)
   })
 
   it('uses default top-center instructions for unknown browsers', () => {
