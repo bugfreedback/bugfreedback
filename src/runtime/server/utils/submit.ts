@@ -1,3 +1,5 @@
+import type { BugfreedbackExportOptions } from '../../../types'
+import { resolveExportOptions } from './resolve-adapters'
 import { z } from 'zod'
 
 /** Max decoded PNG size accepted from the client (~5 MiB). */
@@ -19,6 +21,38 @@ export type FeedbackPayload = {
   description: string
   email?: string
   metadata: Record<string, unknown>
+}
+
+export class BugfreedbackSubmitConfigError extends Error {
+  statusCode: number
+
+  constructor(message: string, statusCode: number = 503) {
+    super(message)
+    this.name = 'BugfreedbackSubmitConfigError'
+    this.statusCode = statusCode
+  }
+}
+
+/**
+ * Resolve export options (including runtime env overrides) and fail fast when
+ * required secrets are missing before reading the request body.
+ */
+export function assertSubmitExportConfigured(
+  exportConfig: BugfreedbackExportOptions | undefined,
+  resolveOptions: typeof resolveExportOptions = resolveExportOptions,
+): BugfreedbackExportOptions {
+  const exportOptions = resolveOptions(exportConfig)
+  if (!exportOptions) {
+    throw new BugfreedbackSubmitConfigError('Feedback export is not configured')
+  }
+
+  if (exportOptions.provider === 'github' && !exportOptions.token?.trim()) {
+    throw new BugfreedbackSubmitConfigError(
+      'GitHub export token is not configured (set GITHUB_FEEDBACK_TOKEN or NUXT_BUGFREEDBACK_EXPORT_TOKEN)',
+    )
+  }
+
+  return exportOptions
 }
 
 export class BugfreedbackScreenshotDecodeError extends Error {
