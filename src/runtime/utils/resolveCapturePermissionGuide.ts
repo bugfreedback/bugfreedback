@@ -16,16 +16,17 @@ export type CapturePermissionGuide = {
   arrow: CaptureArrowDirection
 }
 
-type SupportedOs = 'windows' | 'linux' | 'macos'
+type SupportedOs = 'windows' | 'linux' | 'macos' | 'ios' | 'android'
 type SupportedBrowser = 'chrome' | 'edge' | 'firefox' | 'safari'
 
-const SUPPORTED_OS = new Set<SupportedOs>(['windows', 'linux', 'macos'])
+const SUPPORTED_OS = new Set<SupportedOs>(['windows', 'linux', 'macos', 'ios', 'android'])
 const SUPPORTED_BROWSERS = new Set<SupportedBrowser>(['chrome', 'edge', 'firefox', 'safari'])
 
 function isSupportedEnv(env: CaptureEnvironment): env is { os: SupportedOs, browser: SupportedBrowser } {
   return SUPPORTED_OS.has(env.os as SupportedOs)
     && SUPPORTED_BROWSERS.has(env.browser as SupportedBrowser)
-    && (env.browser !== 'safari' || env.os === 'macos')
+    && (env.browser !== 'safari' || env.os === 'macos' || env.os === 'ios')
+    && (env.browser !== 'edge' || (env.os !== 'ios' && env.os !== 'android'))
 }
 
 function guideKey(env: CaptureEnvironment): string | null {
@@ -133,17 +134,80 @@ function safariMacGuide(): CapturePermissionGuide {
   }
 }
 
+function safariIosGuide(): CapturePermissionGuide {
+  return {
+    heading: 'Allow Safari to share this tab',
+    isDefault: false,
+    showTarget: true,
+    target: { topPercent: 43, leftPercent: 50 },
+    card: { topPercent: 58, leftPercent: 50, anchor: 'center' },
+    arrow: 'up',
+    steps: [
+      'When Safari asks what to share, choose **This Tab** instead of the entire screen.',
+      'Tap **Allow** or **Share** in the system dialog to continue.',
+      'If iOS asks for permission, enable screen recording for Safari in **Settings**.',
+    ],
+  }
+}
+
+function chromiumMobileGuide(os: 'ios' | 'android', browserLabel: 'Chrome'): CapturePermissionGuide {
+  const action = os === 'ios' ? 'Tap' : 'Click'
+  const settingsHint = os === 'ios'
+    ? 'If iOS asks for permission, enable screen recording for Chrome in **Settings**.'
+    : 'If Android asks for permission, allow screen capture for Chrome in system settings.'
+
+  return {
+    heading: 'Allow this tab to be shared',
+    isDefault: false,
+    showTarget: true,
+    target: { topPercent: 43, leftPercent: 50 },
+    card: { topPercent: 58, leftPercent: 50, anchor: 'center' },
+    arrow: 'up',
+    steps: [
+      `In the ${browserLabel} share dialog, choose **This Tab**.`,
+      `${action} **Allow** or **Share** to continue.`,
+      settingsHint,
+    ],
+  }
+}
+
+function firefoxMobileGuide(os: 'ios' | 'android'): CapturePermissionGuide {
+  const action = os === 'ios' ? 'Tap' : 'Click'
+  const settingsHint = os === 'ios'
+    ? 'If iOS asks for permission, enable screen recording for Firefox in **Settings**.'
+    : 'If Android asks for permission, allow screen capture for Firefox in system settings.'
+
+  return {
+    heading: 'Allow screen sharing for this tab',
+    isDefault: false,
+    showTarget: true,
+    target: { topPercent: 43, leftPercent: 50 },
+    card: { topPercent: 58, leftPercent: 50, anchor: 'center' },
+    arrow: 'up',
+    steps: [
+      'Look for the Firefox permission prompt or share dialog.',
+      `Select **This Tab**, then ${action.toLowerCase()} **Allow** or **Share**.`,
+      settingsHint,
+    ],
+  }
+}
+
 const GUIDE_BY_KEY: Record<string, CapturePermissionGuide> = {
   'firefox:windows': firefoxGuide('windows'),
   'firefox:linux': firefoxGuide('linux'),
   'firefox:macos': firefoxGuide('macos'),
+  'firefox:ios': firefoxMobileGuide('ios'),
+  'firefox:android': firefoxMobileGuide('android'),
   'chrome:windows': chromiumCenterGuide('windows', 'Chrome'),
   'chrome:linux': chromiumCenterGuide('linux', 'Chrome'),
   'chrome:macos': chromiumCenterGuide('macos', 'Chrome'),
+  'chrome:ios': chromiumMobileGuide('ios', 'Chrome'),
+  'chrome:android': chromiumMobileGuide('android', 'Chrome'),
   'edge:windows': chromiumCenterGuide('windows', 'Edge'),
   'edge:linux': chromiumCenterGuide('linux', 'Edge'),
   'edge:macos': chromiumCenterGuide('macos', 'Edge'),
   'safari:macos': safariMacGuide(),
+  'safari:ios': safariIosGuide(),
 }
 
 export function resolveCapturePermissionGuide(env: CaptureEnvironment): CapturePermissionGuide {

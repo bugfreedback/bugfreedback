@@ -37,7 +37,7 @@ export function detectCaptureBrowser(userAgent: string): CaptureBrowser {
   if (/edg\//.test(ua) || / edg\//.test(ua)) {
     return 'edge'
   }
-  if (/firefox\//.test(ua)) {
+  if (/firefox\//.test(ua) || /fxios\//.test(ua)) {
     return 'firefox'
   }
   if (/chrome\//.test(ua) || /crios\//.test(ua)) {
