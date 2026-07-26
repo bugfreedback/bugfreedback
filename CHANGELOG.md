@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.0.11](https://github.com/bugfreedback/bugfreedback/compare/v0.0.10...v0.0.11) (2026-07-26)
+
+
+### Features
+
+* **capture:** add mobile browser/OS permission guides ([2855f1c](https://github.com/bugfreedback/bugfreedback/commit/2855f1c0f4ccd12383d2fc4951e6ab1a77d0b636))
+* **capture:** add mobile browser/OS permission guides ([5e2ab39](https://github.com/bugfreedback/bugfreedback/commit/5e2ab39f885d54a1514c9a2d1c6203784fda0cd6))
+
+
+### Bug Fixes
+
+* **submit:** resolve export secrets from runtime env before submit ([c6c7815](https://github.com/bugfreedback/bugfreedback/commit/c6c7815228a73f303c16991d11d73efdc580dbdc))
+* **submit:** resolve export secrets from runtime env before submit ([0e83f5d](https://github.com/bugfreedback/bugfreedback/commit/0e83f5db8439ee08fcd2924f7762c1976b2f5f70))
+
 ## [0.0.10](https://github.com/bugfreedback/bugfreedback/compare/v0.0.9...v0.0.10) (2026-07-22)
 
 
