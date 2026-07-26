@@ -26,7 +26,10 @@ export function resolveStorageOptions(
   if (base.provider === 'gcs') {
     return {
       ...base,
-      bucket: base.bucket || env('FEEDBACK_GCS_BUCKET') || env('BUGFREEDBACK_GCS_BUCKET'),
+      bucket: base.bucket
+        || env('NUXT_BUGFREEDBACK_STORAGE_BUCKET')
+        || env('FEEDBACK_GCS_BUCKET')
+        || env('BUGFREEDBACK_GCS_BUCKET'),
       objectPrefix: base.objectPrefix || DEFAULT_OBJECT_PREFIX,
     }
   }
@@ -53,7 +56,10 @@ export function resolveExportOptions(
   if (options.provider === 'github') {
     return {
       ...options,
-      token: options.token || env('GITHUB_FEEDBACK_TOKEN') || env('BUGFREEDBACK_GITHUB_TOKEN'),
+      token: options.token
+        || env('NUXT_BUGFREEDBACK_EXPORT_TOKEN')
+        || env('GITHUB_FEEDBACK_TOKEN')
+        || env('BUGFREEDBACK_GITHUB_TOKEN'),
       owner: options.owner || env('GITHUB_FEEDBACK_OWNER') || env('BUGFREEDBACK_GITHUB_OWNER'),
       repo: options.repo || env('GITHUB_FEEDBACK_REPO') || env('BUGFREEDBACK_GITHUB_REPO'),
     }
