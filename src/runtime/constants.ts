@@ -1,3 +1,6 @@
+/** Max decoded screenshot size accepted from the client (~5 MiB). */
+export const BUGFREEDBACK_MAX_SCREENSHOT_BYTES = 5 * 1024 * 1024
+
 /** Root element id for the bugfreedback widget (modal dismiss guard). */
 export const BUGFREEDBACK_ROOT_ID = 'bugfreedback-root'
 
@@ -40,4 +43,6 @@ export const BUGFREEDBACK_ICON_NAMES = [
   'lucide:eraser',
   'lucide:x',
   'lucide:camera',
+  'lucide:paperclip',
+  'lucide:circle-help',
 ] as const

@@ -1,10 +1,18 @@
 import { computed, useRuntimeConfig, useState } from "#imports";
+import { nextTick } from "vue";
 import { $fetch } from "ofetch";
 import { nanoid } from "nanoid";
 import { BUGFREEDBACK_ANNOTATE_SCALE } from "../constants.js";
 import { collectFeedbackMetadata } from "../utils/collectFeedbackMetadata.js";
 import { captureTabScreenshot } from "../utils/captureTabScreenshot.js";
-import { withFeedbackOverlayHidden } from "../utils/hideFeedbackOverlayForCapture.js";
+import { resolveCaptureSupportFromUserAgent } from "../utils/captureSupportMatrix.js";
+import {
+  awaitCaptureGuideDismissed,
+  hideCaptureGuideElement,
+  waitForNextPaints,
+  withFeedbackOverlayHidden
+} from "../utils/hideFeedbackOverlayForCapture.js";
+import { BugfreedbackImageFileError, readImageFileAsDataUrl } from "../utils/readImageFileAsDataUrl.js";
 import { scaleImageDataUrl } from "../utils/scaleImageDataUrl.js";
 import { useBugfreedbackAuth } from "./useBugfreedbackAuth.js";
 export function useBugfreedbackWidget() {
@@ -22,6 +30,16 @@ export function useBugfreedbackWidget() {
   const email = useState("bugfreedback-email", () => "");
   const errorMessage = useState("bugfreedback-error", () => null);
   const successMessage = useState("bugfreedback-success", () => null);
+  const captureGuideVisible = useState("bugfreedback-capture-guide-visible", () => false);
+  const captureSupport = computed(() => {
+    if (import.meta.server || typeof navigator === "undefined") {
+      return { method: "display-media", attachHelp: false };
+    }
+    const support = resolveCaptureSupportFromUserAgent(navigator.userAgent);
+    return { method: support.method, attachHelp: support.attachHelp };
+  });
+  const usesScreenshotAttach = computed(() => captureSupport.value.method === "file-attach");
+  const showScreenshotAttachHelp = computed(() => captureSupport.value.attachHelp);
   const isEnabled = computed(() => Boolean(publicConfig.value.enabled));
   const authMode = computed(() => publicConfig.value.auth ?? "optional");
   const submitPath = computed(() => publicConfig.value.submitPath ?? "/api/_bugfreedback/submit");
@@ -43,6 +61,7 @@ export function useBugfreedbackWidget() {
     step.value = "idle";
     screenshotDataUrl.value = null;
     originalScreenshotDataUrl.value = null;
+    captureGuideVisible.value = false;
     resetFormFields();
   }
   function start() {
@@ -61,7 +80,31 @@ export function useBugfreedbackWidget() {
     open.value = true;
     step.value = "form";
   }
+  async function attachScreenshotFile(file) {
+    if (authMode.value === "required" && !auth.getToken()) {
+      errorMessage.value = "Sign in to send feedback.";
+      step.value = "error";
+      return;
+    }
+    errorMessage.value = null;
+    try {
+      const rawDataUrl = await readImageFileAsDataUrl(file);
+      const dataUrl = await scaleImageDataUrl(rawDataUrl, BUGFREEDBACK_ANNOTATE_SCALE);
+      originalScreenshotDataUrl.value = dataUrl;
+      step.value = "annotate";
+    } catch (error) {
+      if (error instanceof BugfreedbackImageFileError) {
+        errorMessage.value = error.message;
+      } else {
+        errorMessage.value = error instanceof Error ? error.message : "Could not attach screenshot";
+      }
+      step.value = "form";
+    }
+  }
   async function includeScreenshot() {
+    if (usesScreenshotAttach.value) {
+      return;
+    }
     if (authMode.value === "required" && !auth.getToken()) {
       errorMessage.value = "Sign in to send feedback.";
       step.value = "error";
@@ -70,8 +113,22 @@ export function useBugfreedbackWidget() {
     errorMessage.value = null;
     step.value = "capture";
     originalScreenshotDataUrl.value = null;
+    captureGuideVisible.value = true;
+    if (import.meta.client) {
+      await nextTick();
+      await waitForNextPaints(2);
+    }
     try {
-      const rawDataUrl = await withFeedbackOverlayHidden(() => captureTabScreenshot());
+      const rawDataUrl = await withFeedbackOverlayHidden(
+        () => captureTabScreenshot({
+          onPermissionGranted: async () => {
+            hideCaptureGuideElement();
+            captureGuideVisible.value = false;
+            await nextTick();
+            await awaitCaptureGuideDismissed();
+          }
+        })
+      );
       const dataUrl = await scaleImageDataUrl(rawDataUrl, BUGFREEDBACK_ANNOTATE_SCALE);
       originalScreenshotDataUrl.value = dataUrl;
       step.value = "annotate";
@@ -83,6 +140,8 @@ export function useBugfreedbackWidget() {
         errorMessage.value = message;
       }
       step.value = "form";
+    } finally {
+      captureGuideVisible.value = false;
     }
   }
   function setAnnotatedScreenshot(dataUrl) {
@@ -165,10 +224,15 @@ export function useBugfreedbackWidget() {
     email,
     errorMessage,
     successMessage,
+    captureGuideVisible,
+    captureSupport,
+    usesScreenshotAttach,
+    showScreenshotAttachHelp,
     isEnabled,
     start,
     close,
     includeScreenshot,
+    attachScreenshotFile,
     setAnnotatedScreenshot,
     cancelAnnotate,
     clearScreenshot,

@@ -110,6 +110,17 @@ export: {
 
 See the [webhook export guide](https://bugfreedback.github.io/bugfreedback/guide/export/webhook) for payload format and response expectations.
 
+### Screenshots on mobile and tablet
+
+Mobile browsers (iOS and Android) do **not** support tab capture via `getDisplayMedia()`. On those platforms the widget shows **Attach a screenshot** instead of **Take a screenshot**, opens the device file picker, and runs the same annotate → submit flow.
+
+A **(?)** help button next to attach explains how to take a system screenshot on the detected device (iPhone, iPad, Samsung, Pixel, OnePlus, Xiaomi, and other major Android OEMs).
+
+| Platform | Screenshot method |
+|----------|-------------------|
+| Desktop (Windows, macOS, Linux) | **Take a screenshot** — tab capture + permission overlay |
+| iOS / Android (phone or tablet) | **Attach a screenshot** — system screenshot + file picker |
+
 ## Development
 
 ```bash

@@ -58,22 +58,17 @@ describe('detectCaptureEnvironment', () => {
 })
 
 describe('resolveCapturePermissionGuide', () => {
-  it('covers all supported browser and OS combinations', () => {
+  it('covers desktop display-media permission guide combinations only', () => {
     expect(__guideKeysForTests().sort()).toEqual([
-      'chrome:android',
-      'chrome:ios',
       'chrome:linux',
       'chrome:macos',
       'chrome:windows',
       'edge:linux',
       'edge:macos',
       'edge:windows',
-      'firefox:android',
-      'firefox:ios',
       'firefox:linux',
       'firefox:macos',
       'firefox:windows',
-      'safari:ios',
       'safari:macos',
     ])
   })
@@ -150,46 +145,10 @@ describe('resolveCapturePermissionGuide', () => {
     expect(guide.steps.join(' ')).not.toMatch(/This Tab/)
   })
 
-  it('returns Safari iOS guidance for tab sharing with a center target ring', () => {
-    const guide = resolveCapturePermissionGuide({ os: 'ios', browser: 'safari' })
-    expect(guide.isDefault).toBe(false)
-    expect(guide.heading).toMatch(/tab/i)
-    expect(guide.target.leftPercent).toBe(50)
-    expect(guide.steps.join(' ')).toMatch(/This Tab/)
-    expect(guide.steps.join(' ')).toMatch(/Settings/)
-    expect(guide.steps).toHaveLength(3)
-  })
-
-  it('returns Chrome iOS guidance with tap-oriented copy', () => {
-    const guide = resolveCapturePermissionGuide({ os: 'ios', browser: 'chrome' })
-    expect(guide.isDefault).toBe(false)
-    expect(guide.steps.join(' ')).toMatch(/Chrome/)
-    expect(guide.steps.join(' ')).toMatch(/Tap/)
-    expect(guide.steps.join(' ')).toMatch(/This Tab/)
-  })
-
-  it('returns Chrome Android guidance with click-oriented copy', () => {
+  it('uses default instructions for mobile platforms (file attach instead)', () => {
     const guide = resolveCapturePermissionGuide({ os: 'android', browser: 'chrome' })
-    expect(guide.isDefault).toBe(false)
-    expect(guide.steps.join(' ')).toMatch(/Chrome/)
-    expect(guide.steps.join(' ')).toMatch(/Click/)
-    expect(guide.steps.join(' ')).toMatch(/This Tab/)
-  })
-
-  it('returns Firefox iOS guidance with a center target ring', () => {
-    const guide = resolveCapturePermissionGuide({ os: 'ios', browser: 'firefox' })
-    expect(guide.isDefault).toBe(false)
-    expect(guide.showTarget).toBe(true)
-    expect(guide.steps.join(' ')).toMatch(/Firefox/)
-    expect(guide.steps.join(' ')).toMatch(/This Tab/)
-  })
-
-  it('returns Firefox Android guidance with a center target ring', () => {
-    const guide = resolveCapturePermissionGuide({ os: 'android', browser: 'firefox' })
-    expect(guide.isDefault).toBe(false)
-    expect(guide.showTarget).toBe(true)
-    expect(guide.steps.join(' ')).toMatch(/This Tab/)
-    expect(guide.steps.join(' ')).toMatch(/Android/)
+    expect(guide.isDefault).toBe(true)
+    expect(guide.heading).toMatch(/screen capture/i)
   })
 
   it('uses default top-center instructions for unknown browsers', () => {

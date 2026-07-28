@@ -1,4 +1,4 @@
-import { BUGFREEDBACK_ROOT_ID } from "../constants.js";
+import { BUGFREEDBACK_CAPTURE_GUIDE_ROOT_ID, BUGFREEDBACK_ROOT_ID } from "../constants.js";
 export function waitForNextPaints(frames = 2) {
   return new Promise((resolve) => {
     const schedule = typeof requestAnimationFrame === "function" ? (cb) => {
@@ -15,6 +15,20 @@ export function waitForNextPaints(frames = 2) {
     };
     step(frames);
   });
+}
+export function hideCaptureGuideElement(doc) {
+  const root = doc?.getElementById(BUGFREEDBACK_CAPTURE_GUIDE_ROOT_ID);
+  if (!root) {
+    return;
+  }
+  root.style.visibility = "hidden";
+  root.style.opacity = "0";
+  root.style.pointerEvents = "none";
+}
+export async function awaitCaptureGuideDismissed(options) {
+  const doc = options?.doc ?? (typeof document !== "undefined" ? document : void 0);
+  hideCaptureGuideElement(doc);
+  await waitForNextPaints(options?.paintFrames ?? 3);
 }
 export async function withFeedbackOverlayHidden(action, options) {
   const doc = options?.doc ?? (typeof document !== "undefined" ? document : void 0);

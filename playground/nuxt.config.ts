@@ -3,6 +3,11 @@ const isOgCapture = process.env.BUGFREEDBACK_OG_CAPTURE === '1'
 export default defineNuxtConfig({
   modules: ['@nuxt/ui', '../src/module'],
   devtools: { enabled: !isOgCapture },
+  app: {
+    head: {
+      title: 'bugfreedback playground (local dev)',
+    },
+  },
   css: ['~/assets/css/main.css'],
   compatibilityDate: '2025-01-01',
   bugfreedback: {
