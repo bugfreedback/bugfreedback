@@ -1,9 +1,9 @@
 import type { BugfreedbackExportOptions } from '../../../types'
+import { BUGFREEDBACK_MAX_SCREENSHOT_BYTES } from '../../constants'
 import { resolveExportOptions } from './resolve-adapters'
 import { z } from 'zod'
 
-/** Max decoded PNG size accepted from the client (~5 MiB). */
-export const BUGFREEDBACK_MAX_SCREENSHOT_BYTES = 5 * 1024 * 1024
+export { BUGFREEDBACK_MAX_SCREENSHOT_BYTES }
 
 const feedbackMetadataSchema = z.record(z.string(), z.unknown())
 

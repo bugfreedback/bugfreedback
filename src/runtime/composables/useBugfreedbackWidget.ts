@@ -5,12 +5,14 @@ import { nanoid } from 'nanoid'
 import { BUGFREEDBACK_ANNOTATE_SCALE } from '../constants'
 import { collectFeedbackMetadata } from '../utils/collectFeedbackMetadata'
 import { captureTabScreenshot } from '../utils/captureTabScreenshot'
+import { resolveCaptureSupportFromUserAgent } from '../utils/captureSupportMatrix'
 import {
   awaitCaptureGuideDismissed,
   hideCaptureGuideElement,
   waitForNextPaints,
   withFeedbackOverlayHidden,
 } from '../utils/hideFeedbackOverlayForCapture'
+import { BugfreedbackImageFileError, readImageFileAsDataUrl } from '../utils/readImageFileAsDataUrl'
 import { scaleImageDataUrl } from '../utils/scaleImageDataUrl'
 import { useBugfreedbackAuth } from './useBugfreedbackAuth'
 
@@ -39,6 +41,17 @@ export function useBugfreedbackWidget() {
   const errorMessage = useState<string | null>('bugfreedback-error', () => null)
   const successMessage = useState<string | null>('bugfreedback-success', () => null)
   const captureGuideVisible = useState('bugfreedback-capture-guide-visible', () => false)
+
+  const captureSupport = computed(() => {
+    if (import.meta.server || typeof navigator === 'undefined') {
+      return { method: 'display-media' as const, attachHelp: false }
+    }
+    const support = resolveCaptureSupportFromUserAgent(navigator.userAgent)
+    return { method: support.method, attachHelp: support.attachHelp }
+  })
+
+  const usesScreenshotAttach = computed(() => captureSupport.value.method === 'file-attach')
+  const showScreenshotAttachHelp = computed(() => captureSupport.value.attachHelp)
 
   const isEnabled = computed(() => Boolean(publicConfig.value.enabled))
   const authMode = computed(() => publicConfig.value.auth ?? 'optional')
@@ -86,7 +99,36 @@ export function useBugfreedbackWidget() {
     step.value = 'form'
   }
 
+  async function attachScreenshotFile(file: File) {
+    if (authMode.value === 'required' && !auth.getToken()) {
+      errorMessage.value = 'Sign in to send feedback.'
+      step.value = 'error'
+      return
+    }
+
+    errorMessage.value = null
+
+    try {
+      const rawDataUrl = await readImageFileAsDataUrl(file)
+      const dataUrl = await scaleImageDataUrl(rawDataUrl, BUGFREEDBACK_ANNOTATE_SCALE)
+      originalScreenshotDataUrl.value = dataUrl
+      step.value = 'annotate'
+    }
+    catch (error) {
+      if (error instanceof BugfreedbackImageFileError) {
+        errorMessage.value = error.message
+      }
+      else {
+        errorMessage.value = error instanceof Error ? error.message : 'Could not attach screenshot'
+      }
+      step.value = 'form'
+    }
+  }
+
   async function includeScreenshot() {
+    if (usesScreenshotAttach.value) {
+      return
+    }
     if (authMode.value === 'required' && !auth.getToken()) {
       errorMessage.value = 'Sign in to send feedback.'
       step.value = 'error'
@@ -231,10 +273,14 @@ export function useBugfreedbackWidget() {
     errorMessage,
     successMessage,
     captureGuideVisible,
+    captureSupport,
+    usesScreenshotAttach,
+    showScreenshotAttachHelp,
     isEnabled,
     start,
     close,
     includeScreenshot,
+    attachScreenshotFile,
     setAnnotatedScreenshot,
     cancelAnnotate,
     clearScreenshot,

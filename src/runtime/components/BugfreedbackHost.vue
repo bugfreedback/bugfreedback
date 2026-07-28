@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { computed, useRuntimeConfig } from '#imports'
+import { computed, ref, useRuntimeConfig } from '#imports'
 import {
   BUGFREEDBACK_LAUNCHER_EDGE_NUDGE_PX,
   BUGFREEDBACK_ROOT_ID,
 } from '../constants'
+import { BUGFREEDBACK_ACCEPTED_IMAGE_EXTENSIONS } from '../utils/readImageFileAsDataUrl'
 import { useBugfreedbackWidget } from '../composables/useBugfreedbackWidget'
 import BugfreedbackAnnotator from './BugfreedbackAnnotator.vue'
+import BugfreedbackScreenshotAttachHelp from './BugfreedbackScreenshotAttachHelp.vue'
 
 const {
   open,
@@ -18,14 +20,41 @@ const {
   errorMessage,
   isEnabled,
   captureGuideVisible,
+  usesScreenshotAttach,
+  showScreenshotAttachHelp,
   start,
   close,
   includeScreenshot,
+  attachScreenshotFile,
   setAnnotatedScreenshot,
   cancelAnnotate,
   clearScreenshot,
   submit,
 } = useBugfreedbackWidget()
+
+const screenshotFileInputRef = ref<HTMLInputElement | null>(null)
+
+function openScreenshotFilePicker() {
+  screenshotFileInputRef.value?.click()
+}
+
+function onScreenshotFileSelected(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = ''
+  if (!file) {
+    return
+  }
+  void attachScreenshotFile(file)
+}
+
+function replaceScreenshot() {
+  if (usesScreenshotAttach.value) {
+    openScreenshotFilePicker()
+    return
+  }
+  void includeScreenshot()
+}
 
 const config = useRuntimeConfig()
 const ui = computed(() => (config.public.bugfreedback ?? {}) as {
@@ -179,17 +208,43 @@ const panelStyle = computed(() => {
 
           <template v-else-if="isFormStep">
             <div class="bf-form-block">
-              <UButton
-                v-if="!screenshotDataUrl"
-                color="primary"
-                variant="soft"
-                icon="i-lucide-camera"
-                class="w-full justify-center"
-                :disabled="step === 'submitting'"
-                @click="includeScreenshot"
+              <input
+                ref="screenshotFileInputRef"
+                type="file"
+                class="bf-file-input"
+                :accept="BUGFREEDBACK_ACCEPTED_IMAGE_EXTENSIONS"
+                tabindex="-1"
+                aria-hidden="true"
+                @change="onScreenshotFileSelected"
               >
-                Include screenshot
-              </UButton>
+              <div
+                v-if="!screenshotDataUrl"
+                class="bf-screenshot-actions-row"
+              >
+                <UButton
+                  v-if="usesScreenshotAttach"
+                  color="primary"
+                  variant="soft"
+                  icon="i-lucide-paperclip"
+                  class="bf-screenshot-actions-row__main"
+                  :disabled="step === 'submitting'"
+                  @click="openScreenshotFilePicker"
+                >
+                  Attach a screenshot
+                </UButton>
+                <UButton
+                  v-else
+                  color="primary"
+                  variant="soft"
+                  icon="i-lucide-camera"
+                  class="bf-screenshot-actions-row__main"
+                  :disabled="step === 'submitting'"
+                  @click="includeScreenshot"
+                >
+                  Take a screenshot
+                </UButton>
+                <BugfreedbackScreenshotAttachHelp v-if="showScreenshotAttachHelp" />
+              </div>
               <div
                 v-else
                 class="bf-screenshot"
@@ -205,7 +260,7 @@ const panelStyle = computed(() => {
                     size="xs"
                     class="flex-1 justify-center"
                     :disabled="step === 'submitting'"
-                    @click="includeScreenshot"
+                    @click="replaceScreenshot"
                   >
                     Replace screenshot
                   </UButton>
@@ -429,6 +484,26 @@ const panelStyle = computed(() => {
 }
 .bf-btn--ghost {
   background: transparent;
+}
+.bf-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.bf-screenshot-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.bf-screenshot-actions-row__main {
+  flex: 1;
+  justify-content: center;
 }
 .bf-screenshot img {
   width: 100%;
