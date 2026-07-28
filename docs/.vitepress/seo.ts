@@ -8,7 +8,7 @@ export const SITE_URL = `${SITE_ORIGIN}${SITE_BASE.replace(/\/$/, '')}/`
 export const SITE_NAME = 'bugfreedback'
 export const SITE_TAGLINE = 'Capture, annotate, and route feedback reports to the tools your team already uses. Bug-free Feedback'
 export const SITE_DESCRIPTION
-  = 'Self-hosted Nuxt feedback widget with screenshot capture, annotation, and exports to GitHub Issues, Linear, Slack, Jira, and more — no external feedback portal or subscription required.'
+  = 'Self-hosted NuxtJS feedback widget with screenshot capture, annotation, and exports to GitHub Issues, Linear, Slack, Jira, and more — no external feedback portal or subscription required.'
 
 /** Freemium bug-reporting / feedback tools with a permanent free tier */
 export const FREEMIUM_COMPETITORS = [
@@ -87,7 +87,7 @@ export const SITE_KEYWORDS = [
 
 export const DEFAULT_OG_IMAGE = `${SITE_URL}og-share.png`
 export const DEFAULT_OG_IMAGE_ALT
-  = 'bugfreedback — Feedback for Nuxt with a horizontal Feedback launcher button'
+  = 'bugfreedback — Feedback for NuxtJS with a horizontal Feedback launcher button'
 
 export type OgImageMeta = {
   width: number
@@ -133,7 +133,7 @@ export function resolvePageUrl(relativePath: string): string {
 
 export function resolvePageTitle(pageData: PageData): string {
   if (pageData.frontmatter.layout === 'home') {
-    return `${SITE_NAME} — Feedback for Nuxt`
+    return `${SITE_NAME} — Feedback for NuxtJS`
   }
   if (pageData.title) {
     return `${pageData.title} | ${SITE_NAME}`

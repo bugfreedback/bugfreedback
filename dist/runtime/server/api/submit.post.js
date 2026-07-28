@@ -10,7 +10,9 @@ import {
   resolveStorageOptions
 } from "../utils/resolve-adapters.js";
 import {
+  assertSubmitExportConfigured,
   BugfreedbackScreenshotDecodeError,
+  BugfreedbackSubmitConfigError,
   bugfreedbackSubmitSchema,
   decodeFeedbackScreenshotBase64
 } from "../utils/submit.js";
@@ -29,12 +31,14 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, message: "Authentication required" });
   }
   const storageOptions = resolveStorageOptions(privateConfig.storage);
-  const exportOptions = privateConfig.export;
-  if (!exportOptions) {
-    throw createError({
-      statusCode: 503,
-      message: "Feedback export is not configured"
-    });
+  let exportOptions;
+  try {
+    exportOptions = assertSubmitExportConfigured(privateConfig.export);
+  } catch (error) {
+    if (error instanceof BugfreedbackSubmitConfigError) {
+      throw createError({ statusCode: error.statusCode, message: error.message });
+    }
+    throw error;
   }
   const body = await readBody(event);
   const parsed = bugfreedbackSubmitSchema.safeParse(body);

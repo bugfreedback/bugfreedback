@@ -1,11 +1,13 @@
 <script setup>
-import { computed, useRuntimeConfig } from "#imports";
+import { computed, ref, useRuntimeConfig } from "#imports";
 import {
   BUGFREEDBACK_LAUNCHER_EDGE_NUDGE_PX,
   BUGFREEDBACK_ROOT_ID
 } from "../constants";
+import { BUGFREEDBACK_ACCEPTED_IMAGE_EXTENSIONS } from "../utils/readImageFileAsDataUrl";
 import { useBugfreedbackWidget } from "../composables/useBugfreedbackWidget";
 import BugfreedbackAnnotator from "./BugfreedbackAnnotator.vue";
+import BugfreedbackScreenshotAttachHelp from "./BugfreedbackScreenshotAttachHelp.vue";
 const {
   open,
   step,
@@ -16,14 +18,38 @@ const {
   email,
   errorMessage,
   isEnabled,
+  captureGuideVisible,
+  usesScreenshotAttach,
+  showScreenshotAttachHelp,
   start,
   close,
   includeScreenshot,
+  attachScreenshotFile,
   setAnnotatedScreenshot,
   cancelAnnotate,
   clearScreenshot,
   submit
 } = useBugfreedbackWidget();
+const screenshotFileInputRef = ref(null);
+function openScreenshotFilePicker() {
+  screenshotFileInputRef.value?.click();
+}
+function onScreenshotFileSelected(event) {
+  const input = event.target;
+  const file = input.files?.[0];
+  input.value = "";
+  if (!file) {
+    return;
+  }
+  void attachScreenshotFile(file);
+}
+function replaceScreenshot() {
+  if (usesScreenshotAttach.value) {
+    openScreenshotFilePicker();
+    return;
+  }
+  void includeScreenshot();
+}
 const config = useRuntimeConfig();
 const ui = computed(() => config.public.bugfreedback ?? {});
 const panelVisible = computed(
@@ -152,17 +178,43 @@ const panelStyle = computed(() => {
 
           <template v-else-if="isFormStep">
             <div class="bf-form-block">
-              <UButton
-                v-if="!screenshotDataUrl"
-                color="primary"
-                variant="soft"
-                icon="i-lucide-camera"
-                class="w-full justify-center"
-                :disabled="step === 'submitting'"
-                @click="includeScreenshot"
+              <input
+                ref="screenshotFileInputRef"
+                type="file"
+                class="bf-file-input"
+                :accept="BUGFREEDBACK_ACCEPTED_IMAGE_EXTENSIONS"
+                tabindex="-1"
+                aria-hidden="true"
+                @change="onScreenshotFileSelected"
               >
-                Include screenshot
-              </UButton>
+              <div
+                v-if="!screenshotDataUrl"
+                class="bf-screenshot-actions-row"
+              >
+                <UButton
+                  v-if="usesScreenshotAttach"
+                  color="primary"
+                  variant="soft"
+                  icon="i-lucide-paperclip"
+                  class="bf-screenshot-actions-row__main"
+                  :disabled="step === 'submitting'"
+                  @click="openScreenshotFilePicker"
+                >
+                  Attach a screenshot
+                </UButton>
+                <UButton
+                  v-else
+                  color="primary"
+                  variant="soft"
+                  icon="i-lucide-camera"
+                  class="bf-screenshot-actions-row__main"
+                  :disabled="step === 'submitting'"
+                  @click="includeScreenshot"
+                >
+                  Take a screenshot
+                </UButton>
+                <BugfreedbackScreenshotAttachHelp v-if="showScreenshotAttachHelp" />
+              </div>
               <div
                 v-else
                 class="bf-screenshot"
@@ -178,7 +230,7 @@ const panelStyle = computed(() => {
                     size="xs"
                     class="flex-1 justify-center"
                     :disabled="step === 'submitting'"
-                    @click="includeScreenshot"
+                    @click="replaceScreenshot"
                   >
                     Replace screenshot
                   </UButton>
@@ -273,9 +325,10 @@ const panelStyle = computed(() => {
         </div>
       </div>
     </div>
+    <BugfreedbackScreenCaptureGuide v-if="captureGuideVisible" />
   </Teleport>
 </template>
 
 <style scoped>
-.bf-root{pointer-events:none}.bf-launcher,.bf-panel{pointer-events:auto}.bf-panel{backdrop-filter:blur(4px);border:1px solid hsla(0,0%,100%,.15);border-radius:.75rem;box-shadow:0 25px 50px rgba(0,0,0,.35);display:flex;flex-direction:column;overflow:hidden;position:fixed;z-index:10051}.bf-panel--form{bottom:1rem;max-height:calc(100dvh - 2rem);right:1rem;width:min(28rem,calc(100vw - 2rem))}.bf-panel--annotate{backdrop-filter:none;border-color:rgba(0,0,0,.1);height:75vh;left:50%;max-height:75vh;max-width:75vw;top:50%;transform:translate(-50%,-50%);width:75vw}.bf-panel__header{align-items:center;border-bottom:1px solid hsla(0,0%,100%,.1);display:flex;flex-shrink:0;gap:.75rem;justify-content:space-between;padding:.75rem 1rem}.bf-panel__header h2{font-size:1rem;font-weight:600;margin:0}.bf-panel__body{display:flex;flex:1;flex-direction:column;font-size:.875rem;gap:1rem;min-height:0;overflow-y:auto;padding:1rem}.bf-panel__body--annotate{overflow:hidden}.bf-panel__footer{border-top:1px solid hsla(0,0%,100%,.1);display:flex;flex-shrink:0;gap:.5rem;justify-content:flex-end;padding:.75rem 1rem}.bf-icon-btn{background:transparent;border:none;color:inherit;cursor:pointer;font-size:1.4rem;line-height:1;opacity:.8}.bf-field{display:flex;flex-direction:column;gap:.35rem}.bf-field span{font-weight:700}.bf-field em{font-style:normal;opacity:.7}.bf-field input,.bf-field textarea{background:rgba(0,0,0,.25);padding:.5rem .65rem;width:100%}.bf-btn,.bf-field input,.bf-field textarea{border:1px solid hsla(0,0%,100%,.2);border-radius:.5rem;color:inherit;font:inherit}.bf-btn{background:hsla(0,0%,100%,.1);cursor:pointer;padding:.45rem .85rem}.bf-btn:disabled{cursor:not-allowed;opacity:.5}.bf-btn--block{width:100%}.bf-btn--primary{background:var(--bugfreedback-primary,#3b82f6);border-color:transparent;color:var(--bugfreedback-primary-text,#fff)}.bf-btn--ghost{background:transparent}.bf-screenshot img{background:rgba(0,0,0,.4);border:1px solid hsla(0,0%,100%,.1);border-radius:.5rem;max-height:12rem;-o-object-fit:contain;object-fit:contain;width:100%}.bf-screenshot__actions{display:flex;gap:.5rem;margin-top:.5rem}.bf-error{color:#f87171;font-size:.8rem;margin:0}
+.bf-root{pointer-events:none}.bf-launcher,.bf-panel{pointer-events:auto}.bf-panel{backdrop-filter:blur(4px);border:1px solid hsla(0,0%,100%,.15);border-radius:.75rem;box-shadow:0 25px 50px rgba(0,0,0,.35);display:flex;flex-direction:column;overflow:hidden;position:fixed;z-index:10051}.bf-panel--form{bottom:1rem;max-height:calc(100dvh - 2rem);right:1rem;width:min(28rem,calc(100vw - 2rem))}.bf-panel--annotate{backdrop-filter:none;border-color:rgba(0,0,0,.1);height:75vh;left:50%;max-height:75vh;max-width:75vw;top:50%;transform:translate(-50%,-50%);width:75vw}.bf-panel__header{align-items:center;border-bottom:1px solid hsla(0,0%,100%,.1);display:flex;flex-shrink:0;gap:.75rem;justify-content:space-between;padding:.75rem 1rem}.bf-panel__header h2{font-size:1rem;font-weight:600;margin:0}.bf-panel__body{display:flex;flex:1;flex-direction:column;font-size:.875rem;gap:1rem;min-height:0;overflow-y:auto;padding:1rem}.bf-panel__body--annotate{overflow:hidden}.bf-panel__footer{border-top:1px solid hsla(0,0%,100%,.1);display:flex;flex-shrink:0;gap:.5rem;justify-content:flex-end;padding:.75rem 1rem}.bf-icon-btn{background:transparent;border:none;color:inherit;cursor:pointer;font-size:1.4rem;line-height:1;opacity:.8}.bf-field{display:flex;flex-direction:column;gap:.35rem}.bf-field span{font-weight:700}.bf-field em{font-style:normal;opacity:.7}.bf-field input,.bf-field textarea{background:rgba(0,0,0,.25);padding:.5rem .65rem;width:100%}.bf-btn,.bf-field input,.bf-field textarea{border:1px solid hsla(0,0%,100%,.2);border-radius:.5rem;color:inherit;font:inherit}.bf-btn{background:hsla(0,0%,100%,.1);cursor:pointer;padding:.45rem .85rem}.bf-btn:disabled{cursor:not-allowed;opacity:.5}.bf-btn--block{width:100%}.bf-btn--primary{background:var(--bugfreedback-primary,#3b82f6);border-color:transparent;color:var(--bugfreedback-primary-text,#fff)}.bf-btn--ghost{background:transparent}.bf-file-input{height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;clip:rect(0,0,0,0);border:0;white-space:nowrap}.bf-screenshot-actions-row{align-items:center;display:flex;gap:.35rem}.bf-screenshot-actions-row__main{flex:1;justify-content:center}.bf-screenshot img{background:rgba(0,0,0,.4);border:1px solid hsla(0,0%,100%,.1);border-radius:.5rem;max-height:12rem;-o-object-fit:contain;object-fit:contain;width:100%}.bf-screenshot__actions{display:flex;gap:.5rem;margin-top:.5rem}.bf-error{color:#f87171;font-size:.8rem;margin:0}
 </style>

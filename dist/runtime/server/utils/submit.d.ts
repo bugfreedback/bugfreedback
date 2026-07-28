@@ -1,6 +1,8 @@
+import type { BugfreedbackExportOptions } from '../../../types.js';
+import { BUGFREEDBACK_MAX_SCREENSHOT_BYTES } from '../../constants.js';
+import { resolveExportOptions } from './resolve-adapters.js';
 import { z } from 'zod';
-/** Max decoded PNG size accepted from the client (~5 MiB). */
-export declare const BUGFREEDBACK_MAX_SCREENSHOT_BYTES: number;
+export { BUGFREEDBACK_MAX_SCREENSHOT_BYTES };
 export declare const bugfreedbackSubmitSchema: z.ZodObject<{
     title: z.ZodString;
     description: z.ZodDefault<z.ZodString>;
@@ -29,6 +31,15 @@ export type FeedbackPayload = {
     email?: string;
     metadata: Record<string, unknown>;
 };
+export declare class BugfreedbackSubmitConfigError extends Error {
+    statusCode: number;
+    constructor(message: string, statusCode?: number);
+}
+/**
+ * Resolve export options (including runtime env overrides) and fail fast when
+ * required secrets are missing before reading the request body.
+ */
+export declare function assertSubmitExportConfigured(exportConfig: BugfreedbackExportOptions | undefined, resolveOptions?: typeof resolveExportOptions): BugfreedbackExportOptions;
 export declare class BugfreedbackScreenshotDecodeError extends Error {
     statusCode: number;
     constructor(message: string, statusCode: number);

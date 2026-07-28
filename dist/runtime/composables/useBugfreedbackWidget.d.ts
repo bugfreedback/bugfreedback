@@ -9,10 +9,18 @@ export declare function useBugfreedbackWidget(): {
     email: import("vue").Ref<string, string>;
     errorMessage: import("vue").Ref<string | null, string | null>;
     successMessage: import("vue").Ref<string | null, string | null>;
+    captureGuideVisible: import("vue").Ref<boolean, boolean>;
+    captureSupport: import("vue").ComputedRef<{
+        method: import("../utils/captureSupportMatrix.js").CaptureMethod;
+        attachHelp: boolean;
+    }>;
+    usesScreenshotAttach: import("vue").ComputedRef<boolean>;
+    showScreenshotAttachHelp: import("vue").ComputedRef<boolean>;
     isEnabled: import("vue").ComputedRef<boolean>;
     start: () => void;
     close: () => void;
     includeScreenshot: () => Promise<void>;
+    attachScreenshotFile: (file: File) => Promise<void>;
     setAnnotatedScreenshot: (dataUrl: string) => void;
     cancelAnnotate: () => void;
     clearScreenshot: () => void;

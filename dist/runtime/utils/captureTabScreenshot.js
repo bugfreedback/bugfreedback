@@ -1,5 +1,6 @@
 import { resolveViewportCropRect } from "./resolveViewportCropRect.js";
-export async function captureTabScreenshot() {
+import { waitForNextPaints } from "./hideFeedbackOverlayForCapture.js";
+export async function captureTabScreenshot(options) {
   if (typeof navigator === "undefined" || !navigator.mediaDevices?.getDisplayMedia) {
     throw new Error("Screen capture is not supported in this browser");
   }
@@ -15,6 +16,8 @@ export async function captureTabScreenshot() {
     surfaceSwitching: "exclude",
     systemAudio: "exclude"
   });
+  await options?.onPermissionGranted?.();
+  await waitForNextPaints(3);
   try {
     const track = stream.getVideoTracks()[0];
     if (!track) {

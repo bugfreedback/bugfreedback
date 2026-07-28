@@ -1,4 +1,7 @@
+export const BUGFREEDBACK_MAX_SCREENSHOT_BYTES = 5 * 1024 * 1024;
 export const BUGFREEDBACK_ROOT_ID = "bugfreedback-root";
+export const BUGFREEDBACK_CAPTURE_GUIDE_ROOT_ID = "bugfreedback-capture-guide-root";
+export const BUGFREEDBACK_CAPTURE_GUIDE_Z_INDEX = 10060;
 export const BUGFREEDBACK_HOST_SELECTOR = `#${BUGFREEDBACK_ROOT_ID}`;
 export const BUGFREEDBACK_LAUNCHER_EDGE_NUDGE_PX = 34;
 export const BUGFREEDBACK_ANNOTATE_SCALE = 0.75;
@@ -23,5 +26,7 @@ export const BUGFREEDBACK_ICON_NAMES = [
   "lucide:trash-2",
   "lucide:eraser",
   "lucide:x",
-  "lucide:camera"
+  "lucide:camera",
+  "lucide:paperclip",
+  "lucide:circle-help"
 ];
