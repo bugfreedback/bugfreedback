@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.12](https://github.com/bugfreedback/bugfreedback/compare/v0.0.11...v0.0.12) (2026-07-28)
+
+
+### Features
+
+* **capture:** add mobile screenshot attach flow with device help ([d12190c](https://github.com/bugfreedback/bugfreedback/commit/d12190c867a89e554720bec59352b16362f0ba2a))
+* **capture:** mobile screenshot attach flow with device help ([186538e](https://github.com/bugfreedback/bugfreedback/commit/186538e449ba42abb5e3e498603d4e67ef67b3c0))
+
 ## [0.0.11](https://github.com/bugfreedback/bugfreedback/compare/v0.0.10...v0.0.11) (2026-07-26)
 
 
