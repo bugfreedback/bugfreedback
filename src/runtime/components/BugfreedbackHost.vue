@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, useRuntimeConfig } from '#imports'
 import {
+  BUGFREEDBACK_DEFAULT_LAUNCHER_PADDING,
   BUGFREEDBACK_LAUNCHER_EDGE_NUDGE_PX,
   BUGFREEDBACK_ROOT_ID,
 } from '../constants'
@@ -68,6 +69,7 @@ const ui = computed(() => (config.public.bugfreedback ?? {}) as {
   buttonLayout?: 'horizontal' | 'vertical'
   position?: { edge?: 'left' | 'right' | 'top' | 'bottom', offsetX?: number, offsetY?: number }
   label?: string
+  launcherPadding?: string
 })
 
 const panelVisible = computed(
@@ -98,7 +100,7 @@ const launcherStyle = computed(() => {
     zIndex: '10050',
     backgroundColor: primary,
     color: text,
-    padding: '0.55rem 1.1rem',
+    padding: ui.value.launcherPadding?.trim() || BUGFREEDBACK_DEFAULT_LAUNCHER_PADDING,
     border: 'none',
     cursor: 'pointer',
     fontWeight: '700',

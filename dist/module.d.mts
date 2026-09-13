@@ -104,6 +104,12 @@ interface ModuleOptions {
     auth: BugfreedbackAuthMode;
     /** Launcher button label. */
     label: string;
+    /**
+     * CSS padding for the edge launcher button (`padding-block padding-inline`).
+     * For a vertical side tab, block padding controls the thickness into the page.
+     * @default '0.55rem 1.1rem'
+     */
+    launcherPadding: string;
     /** Submit endpoint path (module registers under /api/_bugfreedback/submit by default). */
     submitPath: string;
     storage: BugfreedbackStorageOptions;

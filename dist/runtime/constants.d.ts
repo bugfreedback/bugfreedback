@@ -19,5 +19,7 @@ export declare const BUGFREEDBACK_DEFAULT_MODAL_BG = "rgba(15, 23, 42, 0.98)";
 export declare const BUGFREEDBACK_DEFAULT_MODAL_TEXT = "#ffffff";
 export declare const BUGFREEDBACK_DEFAULT_ANNOTATE_BG = "#3f3f46";
 export declare const BUGFREEDBACK_DEFAULT_ANNOTATE_TEXT = "#f4f4f5";
+/** CSS padding for the edge launcher (`padding-block padding-inline`). */
+export declare const BUGFREEDBACK_DEFAULT_LAUNCHER_PADDING = "0.55rem 1.1rem";
 /** Lucide icons used by the widget toolbar (bundled via @nuxt/icon). */
 export declare const BUGFREEDBACK_ICON_NAMES: readonly ["lucide:mouse-pointer-2", "lucide:pencil", "lucide:highlighter", "lucide:move-up-right", "lucide:square", "lucide:circle", "lucide:type", "lucide:eye-off", "lucide:undo-2", "lucide:redo-2", "lucide:trash-2", "lucide:eraser", "lucide:x", "lucide:camera", "lucide:paperclip", "lucide:circle-help"];

@@ -1,5 +1,5 @@
 import { defineNuxtModule, createResolver, addComponentsDir, addImportsDir, addPlugin, addServerHandler } from '@nuxt/kit';
-import { BUGFREEDBACK_DEFAULT_ANNOTATE_TEXT, BUGFREEDBACK_DEFAULT_ANNOTATE_BG, BUGFREEDBACK_DEFAULT_MODAL_TEXT, BUGFREEDBACK_DEFAULT_MODAL_BG, BUGFREEDBACK_DEFAULT_PRIMARY_TEXT, BUGFREEDBACK_DEFAULT_SECONDARY, BUGFREEDBACK_DEFAULT_PRIMARY, BUGFREEDBACK_ICON_NAMES } from '../dist/runtime/constants.js';
+import { BUGFREEDBACK_DEFAULT_LAUNCHER_PADDING, BUGFREEDBACK_DEFAULT_ANNOTATE_TEXT, BUGFREEDBACK_DEFAULT_ANNOTATE_BG, BUGFREEDBACK_DEFAULT_MODAL_TEXT, BUGFREEDBACK_DEFAULT_MODAL_BG, BUGFREEDBACK_DEFAULT_PRIMARY_TEXT, BUGFREEDBACK_DEFAULT_SECONDARY, BUGFREEDBACK_DEFAULT_PRIMARY, BUGFREEDBACK_ICON_NAMES } from '../dist/runtime/constants.js';
 
 const module$1 = defineNuxtModule({
   meta: {
@@ -32,6 +32,7 @@ const module$1 = defineNuxtModule({
     },
     auth: "optional",
     label: "Feedback",
+    launcherPadding: BUGFREEDBACK_DEFAULT_LAUNCHER_PADDING,
     submitPath: "/api/_bugfreedback/submit",
     storage: {
       provider: "none"
@@ -57,6 +58,7 @@ const module$1 = defineNuxtModule({
       position: options.position,
       auth: options.auth,
       label: options.label,
+      launcherPadding: options.launcherPadding,
       submitPath: options.submitPath
     };
     nuxt.options.runtimeConfig.bugfreedback = {

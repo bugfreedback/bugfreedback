@@ -15,6 +15,7 @@ import {
   BUGFREEDBACK_DEFAULT_PRIMARY,
   BUGFREEDBACK_DEFAULT_PRIMARY_TEXT,
   BUGFREEDBACK_DEFAULT_SECONDARY,
+  BUGFREEDBACK_DEFAULT_LAUNCHER_PADDING,
   BUGFREEDBACK_ICON_NAMES,
 } from './runtime/constants'
 
@@ -61,6 +62,7 @@ export default defineNuxtModule<ModuleOptions>({
     },
     auth: 'optional',
     label: 'Feedback',
+    launcherPadding: BUGFREEDBACK_DEFAULT_LAUNCHER_PADDING,
     submitPath: '/api/_bugfreedback/submit',
     storage: {
       provider: 'none',
@@ -88,6 +90,7 @@ export default defineNuxtModule<ModuleOptions>({
       position: options.position,
       auth: options.auth,
       label: options.label,
+      launcherPadding: options.launcherPadding,
       submitPath: options.submitPath,
     }
 

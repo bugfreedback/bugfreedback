@@ -16,6 +16,7 @@
 | `position.offsetY` | `number` | `0` | Pixel offset on Y |
 | `auth` | `'required' \| 'optional' \| 'none'` | `'optional'` | Client auth gate |
 | `label` | `string` | `'Feedback'` | Launcher label |
+| `launcherPadding` | `string` | `'0.55rem 1.1rem'` | CSS padding for the edge launcher (`padding-block padding-inline`). For a vertical side tab, block padding is the thickness into the page. |
 | `submitPath` | `string` | `/api/_bugfreedback/submit` | Nitro route |
 | `storage` | object | `{ provider: 'none' }` | Screenshot storage adapter |
 | `export` | object | webhook stub | Export adapter |
