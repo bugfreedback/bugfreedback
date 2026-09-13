@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.13](https://github.com/bugfreedback/bugfreedback/compare/v0.0.12...v0.0.13) (2026-09-13)
+
+
+### Features
+
+* **ui:** make edge launcher padding configurable ([bc1e5b6](https://github.com/bugfreedback/bugfreedback/commit/bc1e5b6f9326ca31a2cdcef5152b20164af3df97))
+* **ui:** make edge launcher padding configurable ([fe3e66c](https://github.com/bugfreedback/bugfreedback/commit/fe3e66ca739bcc7213e694b2596f55ffafbcde2f))
+
 ## [0.0.12](https://github.com/bugfreedback/bugfreedback/compare/v0.0.11...v0.0.12) (2026-07-28)
 
 
