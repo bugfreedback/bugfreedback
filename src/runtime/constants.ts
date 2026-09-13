@@ -26,6 +26,8 @@ export const BUGFREEDBACK_DEFAULT_MODAL_BG = 'rgba(15, 23, 42, 0.98)'
 export const BUGFREEDBACK_DEFAULT_MODAL_TEXT = '#ffffff'
 export const BUGFREEDBACK_DEFAULT_ANNOTATE_BG = '#3f3f46'
 export const BUGFREEDBACK_DEFAULT_ANNOTATE_TEXT = '#f4f4f5'
+/** CSS padding for the edge launcher (`padding-block padding-inline`). */
+export const BUGFREEDBACK_DEFAULT_LAUNCHER_PADDING = '0.55rem 1.1rem'
 
 /** Lucide icons used by the widget toolbar (bundled via @nuxt/icon). */
 export const BUGFREEDBACK_ICON_NAMES = [
